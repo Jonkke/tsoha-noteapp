@@ -1,4 +1,4 @@
-#Note app for tsoha course
+# Note app for tsoha course
 
 This is a note taking / time tracing app that will be built as part of a university course project on databases. More detailed specification below in finnish.
 
