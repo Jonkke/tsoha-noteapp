@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{% if note is defined %}
+<form id="noteform" method="POST" action="{{ url_for('notes_update', note_id=note.id) }}">
+    <input type="text" name="title" value="{{ note.title }}">
+    <textarea name="content" form="noteform" cols="30" rows="10">{{ note.content }}</textarea>
+    <input type="checkbox" name="is_shared" {{"checked" if note.is_shared else "" }}>
+    <input type="submit" value="Update note">
+</form>
+{% else %}
+<form id="noteform" method="POST" action="{{ url_for('notes_create') }}">
+        <input type="text" name="title"">
+        <textarea name="content" form="noteform" cols="30" rows="10"></textarea>
+        <input type="checkbox" name=is_shared>
+        <input type="submit" value="Add note">
+    </form>
+{% endif %}
+{% endblock %}
