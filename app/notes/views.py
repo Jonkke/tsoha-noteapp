@@ -1,16 +1,18 @@
 from app import app, db
 from flask import redirect, url_for, render_template, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from app.notes.models import Note
 from app.notes.forms import NoteForm
 
 @app.route("/notes", methods=["GET"])
+@login_required
 def notes_index():
     notes = Note.query.all()
     return render_template("notes/notelist.html", notes=notes)
 
 @app.route("/notes/new")
+@login_required
 def notes_form():
     return render_template("notes/newnote.html", form=NoteForm())
 
@@ -22,16 +24,16 @@ def notes_create():
     if not form.validate():
         return render_template("notes/newnote.html", form=form)
 
-    note = Note(form.title.data, form.content.data, 0, form.is_shared.data, 0)
+    note = Note(form.title.data, form.content.data, current_user.id, form.is_shared.data, 0)
     db.session().add(note)
     db.session().commit()
 
     return redirect(url_for("notes_index"))
 
 @app.route("/notes/<note_id>", methods=["GET"])
+@login_required
 def notes_edit(note_id):
     note = Note.query.get(note_id)
-    #print("Note is:\n\n" + note + "\n\n")
     return render_template("notes/newnote.html", note=note)
 
 @app.route("/notes/edit/<note_id>/", methods=["POST"])

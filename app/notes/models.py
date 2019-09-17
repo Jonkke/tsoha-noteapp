@@ -2,7 +2,7 @@ from app import db
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    creator_id = db.Column(db.Integer, default=0)
+    creator_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     title = db.Column(db.String())
     content = db.Column(db.String(), default="")
