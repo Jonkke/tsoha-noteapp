@@ -21,7 +21,7 @@ def register_user():
     if (user):
         return render_template("auth/registerform.html", form=form, error="Username " + form.username.data + " is in use!")
 
-    pw_hash = bcrypt.generate_password_hash(form.password.data)
+    pw_hash = bcrypt.generate_password_hash(form.password.data.encode('utf-8'))
     new_user = User(form.username.data, pw_hash)
 
     db.session().add(new_user)
@@ -37,7 +37,7 @@ def auth_login():
     form = LoginForm(request.form)
 
     user = User.query.filter_by(username=form.username.data).first()
-    if not user or not bcrypt.check_password_hash(user.password.decode("utf8"), form.password.data):
+    if not user or not bcrypt.check_password_hash(user.password, form.password.data):
         return render_template("auth/loginform.html", form=form, error="No such username or password")
 
     login_user(user)
