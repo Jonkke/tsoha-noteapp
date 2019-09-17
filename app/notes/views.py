@@ -1,6 +1,9 @@
 from app import app, db
 from flask import redirect, url_for, render_template, request
+from flask_login import login_required
+
 from app.notes.models import Note
+from app.notes.forms import NoteForm
 
 @app.route("/notes", methods=["GET"])
 def notes_index():
@@ -9,11 +12,17 @@ def notes_index():
 
 @app.route("/notes/new")
 def notes_form():
-    return render_template("notes/newnote.html")
+    return render_template("notes/newnote.html", form=NoteForm())
 
 @app.route("/notes/", methods=["POST"])
+@login_required
 def notes_create():
-    note = Note(request.form.get("title"), request.form.get("content"), 0, 1 if request.form.get("is_shared") == "on" else 0, 0)
+    form = NoteForm(request.form)
+
+    if not form.validate():
+        return render_template("notes/newnote.html", form=form)
+
+    note = Note(form.title.data, form.content.data, 0, form.is_shared.data, 0)
     db.session().add(note)
     db.session().commit()
 
@@ -26,6 +35,7 @@ def notes_edit(note_id):
     return render_template("notes/newnote.html", note=note)
 
 @app.route("/notes/edit/<note_id>/", methods=["POST"])
+@login_required
 def notes_update(note_id):
     note = Note.query.get(note_id)
     note.title = request.form.get("title")
@@ -36,6 +46,7 @@ def notes_update(note_id):
     return render_template("notes/notelist.html", notes=Note.query.all())
 
 @app.route("/notes/delete/<note_id>/", methods=["POST"])
+@login_required
 def notes_delete(note_id):
     note = Note.query.get(note_id)
     db.session().delete(note)

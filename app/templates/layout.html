@@ -6,6 +6,13 @@
     </head>
 
     <body>
+        {% if current_user.is_authenticated %}
+        <p>Kirjautunut nimellä {{ current_user.username }}</p>
+        <a href="{{ url_for('auth_logout') }}">Kirjaudu ulos</a>
+        {% else %}
+        <a href="{{ url_for('auth_login') }}">Kirjaudu</a>
+        {% endif %}
+
         <ul>
             <li><a href="{{ url_for('notes_index') }}">List notes</a></li>
             <li><a href="{{ url_for('notes_form') }}">Add new note</a></li>
