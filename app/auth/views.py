@@ -21,7 +21,7 @@ def register_user():
     if (user):
         return render_template("auth/registerform.html", form=form, error="Username " + form.username.data + " is in use!")
 
-    pw_hash = bcrypt.generate_password_hash(form.password.data)
+    pw_hash = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
     new_user = User(form.username.data, pw_hash)
 
     db.session().add(new_user)
