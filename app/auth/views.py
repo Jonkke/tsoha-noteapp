@@ -18,8 +18,6 @@ def register_user():
 
     # Existing user check
     user = User.query.filter_by(username=form.username.data).first()
-    print("user is: \n\n\n")
-    print(user)
     if (user):
         return render_template("auth/registerform.html", form=form, error="Username " + form.username.data + " is in use!")
 
@@ -35,11 +33,11 @@ def register_user():
 def auth_login():
     if request.method == "GET":
         return render_template("auth/loginform.html", form=LoginForm())
-    
+
     form = LoginForm(request.form)
 
     user = User.query.filter_by(username=form.username.data).first()
-    if not user or not bcrypt.check_password_hash(user.password, form.password.data):
+    if not user or not bcrypt.check_password_hash(user.password.decode("utf8"), form.password.data):
         return render_template("auth/loginform.html", form=form, error="No such username or password")
 
     login_user(user)
