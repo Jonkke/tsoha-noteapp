@@ -43,6 +43,7 @@ def notes_update(note_id):
     note.title = request.form.get("title")
     note.content = request.form.get("content")
     note.is_shared = 1 if request.form.get("is_shared") == "on" else 0
+    note.last_editor_id = current_user.id
     db.session().commit()
 
     return render_template("notes/notelist.html", notes=Note.query.all())

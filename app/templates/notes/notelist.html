@@ -9,6 +9,8 @@
     <tr>
         <td>{{ note.title }}</td>
         <td>{{ note.content }}</td>
+        <td>CREATED BY: {{ note.creator.username }}</td>
+        <td>LAST EDIT BY: {{ note.last_editor.username }}</td>>
         <td>
             <form method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}">
                 <input type="submit" value="Delete">

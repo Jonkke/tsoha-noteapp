@@ -8,13 +8,11 @@ class User(db.Model):
     date_modified = db.Column(db.DateTime, default=db.func.current_timestamp(),
                               onupdate=db.func.current_timestamp())
     username = db.Column(db.String(144), nullable=False)
-    password = db.Column(db.String(144), nullable=False)
+    password_hash = db.Column(db.String(144), nullable=False)
 
-    notes = db.relationship('Note', backref='creator', lazy=True)
-
-    def __init__(self, username, password):
+    def __init__(self, username, password_hash):
         self.username = username
-        self.password = password
+        self.password_hash = password_hash
 
     def get_id(self):
         return self.id
