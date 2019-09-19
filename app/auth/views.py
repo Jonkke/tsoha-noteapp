@@ -16,10 +16,12 @@ def register_user():
 
     form = RegisterForm(request.form)
 
-    # Existing user check
+    # Existing user check & form validation
     user = User.query.filter_by(username=form.username.data).first()
     if (user):
         return render_template("auth/registerform.html", form=form, error="Username " + form.username.data + " is in use!")
+    if not form.validate():
+        return render_template("auth/registerform.html", form=form)
 
     pw_hash = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
     new_user = User(form.username.data, pw_hash)
