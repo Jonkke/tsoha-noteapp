@@ -4,8 +4,8 @@ This is a note taking / time tracing app that will be built as part of a univers
 
 A running Heroku instance of the app can be viewed [here](https://tsoha-noteapp.herokuapp.com/)
 
-Test account credentials for the Heroku app:
-Username: testi
+Test account credentials for the Heroku app:  
+Username: testi  
 Password: passu
 
 ## Muistiinpano- ja ajanseuraamisohjelma
