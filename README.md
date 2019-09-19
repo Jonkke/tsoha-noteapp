@@ -4,6 +4,10 @@ This is a note taking / time tracing app that will be built as part of a univers
 
 A running Heroku instance of the app can be viewed [here](https://tsoha-noteapp.herokuapp.com/)
 
+Test account credentials for the Heroku app:
+Username: testi
+Password: passu
+
 ## Muistiinpano- ja ajanseuraamisohjelma
 
 Tarkoituksena on luoda ohjelma, jolla voi tehdä ja tarkastella muistiinpanoja, kuin myös seurata esimerkiksi kursseihin ja opiskeluun käytettyä aikaa tietyllä aikavälillä. Tässä vaiheessa tietokantakaaviossa on vasta pelkkiin muistiinpanoihin liittyvät taulut ja relaatiot. Alla listattuna ohjelmaan tässä vaiheessa liittyviä toiminnallisuuksia:
