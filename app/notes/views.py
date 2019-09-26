@@ -33,12 +33,21 @@ def notes_create():
 @app.route("/notes/<note_id>", methods=["GET"])
 @login_required
 def notes_edit(note_id):
+    form = NoteForm()
     note = Note.query.get(note_id)
-    return render_template("notes/newnote.html", note=note)
+    form.title.data = note.title
+    form.content.data = note.content
+    form.is_shared.data = note.is_shared
+    return render_template("notes/newnote.html", form=form, note_id=note.id)
 
 @app.route("/notes/edit/<note_id>/", methods=["POST"])
 @login_required
 def notes_update(note_id):
+    form = NoteForm(request.form)
+
+    if not form.validate():
+        return render_template("notes/newnote.html", form=form, note_id=note_id)
+
     note = Note.query.get(note_id)
     note.title = request.form.get("title")
     note.content = request.form.get("content")

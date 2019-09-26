@@ -1,18 +1,38 @@
 {% extends "layout.html" %}
 
 {% block body %}
-{% if note is defined %}
+{% if note_id is defined %}
+<form id="noteform" method="POST" action="{{ url_for('notes_update', note_id=note_id) }}">
+  <div class="form-group">Edit note:</div>
+  <div class="form-group">
+    {{ form.title.label }}
+    {{ form.title(class_="form-control") }}
+    <ul>
+      {% for error in form.title.errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
 
-<form id="noteform" method="POST" action="{{ url_for('notes_update', note_id=note.id) }}">
-  <input type="text" name="title" value="{{ note.title }}">
-  <textarea name="content" form="noteform" cols="30" rows="10">{{ note.content }}</textarea>
-  <input type="checkbox" name="is_shared" {{"checked" if note.is_shared else "" }}>
-  <input type="submit" value="Update note">
+    {{ form.content.label }}
+    {{ form.content(class_="form-control") }}
+
+    <div class="form-check">
+      {{ form.is_shared(class_="form-check-input") }}
+      {{ form.is_shared.label }}
+    </div>
+
+    <input class="btn btn-primary" type="submit" value="Update note">
+
+    {#<input type="text" name="title" value="{{ note.title }}">
+    <textarea name="content" form="noteform" cols="30" rows="10">{{ note.content }}</textarea>
+    <input type="checkbox" name="is_shared" {{"checked" if note.is_shared else "" }}>
+    <input type="submit" value="Update note">#}
+  </div>
 </form>
 {% else %}
 <form id="noteform" method="POST" action="{{ url_for('notes_create') }}">
+  <div class="form-group">Add a new note:</div>
   <div class="form-group">
-
     {{form.title.label}}
     {{form.title(class_="form-control")}}
     <ul>
@@ -29,9 +49,7 @@
       {{form.is_shared.label}}
     </div>
 
-
     <input class="btn btn-primary" type="submit" value="Add note">
-
 
   </div>
 </form>
@@ -41,7 +59,7 @@
 
 
 
-<!-- <form id="noteform" method="POST" action="{{ url_for('notes_create') }}">
+{# <form id="noteform" method="POST" action="{{ url_for('notes_create') }}">
     <table>
       <tr>
         <td>{{form.title.label}}</td>
@@ -68,4 +86,4 @@
         </td>
       </tr>
     </table>
-  </form> -->
+  </form> #}

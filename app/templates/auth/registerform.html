@@ -2,38 +2,30 @@
 
 {% block body %}
 <form method="POST" action="{{ url_for('register_user') }}">
-    <p>Register a new user</p>
-    <table>
-        <tr>
-            <td>{{ form.username.label }}</td>
-            <td>{{ form.username }}</td>
-            <td>
-                <ul>
-                    {% if error %}
-                        <li>{{ error }}</li>
-                    {% endif %}
-                    {% for error in form.username.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td>{{ form.password.label }}</td>
-            <td>{{ form.password }}</td>
-            <td>
-                    <ul>
-                        {% for error in form.password.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="Register user">
-            </td>
-        </tr>
-    </table>
+  <div class="form-group">Register a new user:</div>
+  <div class="form-group">
+    {{ form.username.label }}
+    {{ form.username(class_="form-control") }}
+    <ul>
+      {% if error %}
+      <li>{{ error }}</li>
+      {% endif %}
+      {% for error in form.username.errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="form-group">
+    {{ form.password.label }}
+    {{ form.password(class_="form-control") }}
+    <ul>
+      {% for error in form.password.errors%}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary" type="submit">Register user</button>
+  </div>
 </form>
 {% endblock %}

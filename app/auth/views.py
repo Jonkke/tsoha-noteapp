@@ -29,7 +29,7 @@ def register_user():
     db.session().add(new_user)
     db.session().commit()
 
-    return redirect(url_for("index"))
+    return redirect(url_for("auth_login"))
 
 @app.route("/auth/login", methods=["GET", "POST"])
 def auth_login():
@@ -43,9 +43,9 @@ def auth_login():
         return render_template("auth/loginform.html", form=form, error="No such username or password")
 
     login_user(user)
-    return redirect(url_for("index"))
+    return redirect(url_for("notes_index"))
 
 @app.route("/auth/logout", methods=["GET"])
 def auth_logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect(url_for("auth_login"))
