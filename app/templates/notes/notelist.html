@@ -15,7 +15,7 @@
         <form class="form-inline pull-left" method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
           <button class="btn btn-primary mr-3" type="submit">Edit</button>
         </form>
-        <form class="form-inline" method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}">
+        <form class="form-inline" method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}" onsubmit="return confirm('Delete note?');">
           <button class="btn btn-primary" type="submit">Delete</button>
         </form>
       </div>
