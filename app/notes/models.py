@@ -1,11 +1,10 @@
 from app import db
+from app.models import Base
 from sqlalchemy.orm import relationship
 
-class Note(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class Note(Base):
     creator_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     last_editor_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
-    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
     title = db.Column(db.String())
     content = db.Column(db.String(), default="")
     is_shared = db.Column(db.Boolean)
