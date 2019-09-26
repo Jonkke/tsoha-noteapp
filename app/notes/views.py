@@ -2,7 +2,7 @@ from app import app, db
 from flask import redirect, url_for, render_template, request
 from flask_login import login_required, current_user
 
-from app.notes.models import Note
+from app.notes.models import Note, Tag
 from app.notes.forms import NoteForm
 
 @app.route("/notes", methods=["GET"])
@@ -28,6 +28,18 @@ def notes_create():
     note = Note(form.title.data, form.content.data, current_user.id, form.is_shared.data, 0)
     db.session().add(note)
 
+    # parse tags & associate with this note (BROKEN AF)
+    # tags = form.tags.data.split()
+    # allTags = Tag.query.all()
+    # for tagStr in tags:
+    #     tag = allTags.filter_by(name=tagStr).first()
+    #     if tag is None:
+    #         tag = Tag(tagStr)
+    #         db.session().add(tag)
+    #         db.session().commit()
+    #     with db.session.no_autoflush:
+    #         note.tags.append(tag)
+
     # add read and write right to creator of this note
     current_user.readableNotes.append(note)
     current_user.writableNotes.append(note)
@@ -49,6 +61,7 @@ def notes_edit(note_id):
     form.title.data = note.title
     form.content.data = note.content
     form.is_shared.data = note.is_shared
+    form.tags.data = " ".join(map(str, note.tags.all()))
     return render_template("notes/newnote.html", form=form, note_id=note.id)
 
 @app.route("/notes/edit/<note_id>/", methods=["POST"])

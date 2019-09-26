@@ -2,10 +2,10 @@ from app import db
 from app.models import Base
 from sqlalchemy.orm import relationship
 
-# noteTag = db.Table("noteTag",
-#                     db.Column("note_id", db.Integer, db.ForeignKey("note.id"), primary_key=True),
-#                     db.Column("tag_id", db.Integer, db.ForeignKey("tag.id", primary_key=True))                    
-# )
+noteTag = db.Table("noteTag",
+                    db.Column("note_id", db.Integer, db.ForeignKey("note.id"), primary_key=True),
+                    db.Column("tag_id", db.Integer, db.ForeignKey("tag.id", primary_key=True))
+)
 
 class Note(Base):
     creator_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
@@ -16,6 +16,8 @@ class Note(Base):
     is_archived = db.Column(db.Boolean)
     creator = relationship("User", foreign_keys=[creator_id])
     last_editor = relationship("User", foreign_keys=[last_editor_id])
+    tags = db.relationship("Tag", secondary=noteTag, lazy="dynamic",
+            backref=db.backref("notes", lazy="dynamic"))
 
     def __init__(self, title, content, creator_id, is_shared, is_archived):
         self.title = title
@@ -29,5 +31,11 @@ class Note(Base):
         return "Title: " + self.title + "\nContent: " + self.content
         
     
-# class Tag(Base):
-#     name = db.Column(db.String(32), nullable=False)
+class Tag(Base):
+    name = db.Column(db.String(32), nullable=False)
+
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return self.name
