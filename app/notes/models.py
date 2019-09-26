@@ -2,6 +2,11 @@ from app import db
 from app.models import Base
 from sqlalchemy.orm import relationship
 
+# noteTag = db.Table("noteTag",
+#                     db.Column("note_id", db.Integer, db.ForeignKey("note.id"), primary_key=True),
+#                     db.Column("tag_id", db.Integer, db.ForeignKey("tag.id", primary_key=True))                    
+# )
+
 class Note(Base):
     creator_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     last_editor_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
@@ -23,3 +28,6 @@ class Note(Base):
     def __str__(self):
         return "Title: " + self.title + "\nContent: " + self.content
         
+    
+# class Tag(Base):
+#     name = db.Column(db.String(32), nullable=False)

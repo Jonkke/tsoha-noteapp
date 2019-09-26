@@ -8,7 +8,8 @@ from app.notes.forms import NoteForm
 @app.route("/notes", methods=["GET"])
 @login_required
 def notes_index():
-    notes = Note.query.all()
+    #notes = Note.query.all()
+    notes = current_user.readableNotes
     return render_template("notes/notelist.html", notes=notes)
 
 @app.route("/notes/new")
@@ -26,6 +27,12 @@ def notes_create():
 
     note = Note(form.title.data, form.content.data, current_user.id, form.is_shared.data, 0)
     db.session().add(note)
+
+    # add read and write right to creator of this note
+    current_user.readableNotes.append(note)
+    current_user.writableNotes.append(note)
+    db.session().add(current_user)
+
     db.session().commit()
 
     return redirect(url_for("notes_index"))
@@ -35,6 +42,10 @@ def notes_create():
 def notes_edit(note_id):
     form = NoteForm()
     note = Note.query.get(note_id)
+
+    if note.writeUsers.filter_by(id=current_user.id).first() is None:
+        return redirect(url_for("notes_index", error="You do not have rights to edit this note!"))
+
     form.title.data = note.title
     form.content.data = note.content
     form.is_shared.data = note.is_shared
@@ -49,6 +60,10 @@ def notes_update(note_id):
         return render_template("notes/newnote.html", form=form, note_id=note_id)
 
     note = Note.query.get(note_id)
+
+    if note.writeUsers.filter_by(id=current_user.id).first() is None:
+        return redirect(url_for("notes_index"))
+
     note.title = request.form.get("title")
     note.content = request.form.get("content")
     note.is_shared = 1 if request.form.get("is_shared") == "on" else 0
@@ -61,6 +76,10 @@ def notes_update(note_id):
 @login_required
 def notes_delete(note_id):
     note = Note.query.get(note_id)
+
+    if note.writeUsers.filter_by(id=current_user.id).first() is None:
+        return redirect(url_for("notes_index"))
+
     db.session().delete(note)
     db.session().commit()
 
