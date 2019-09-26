@@ -15,10 +15,14 @@ Tarkoituksena on luoda ohjelma, jolla voi tehdä ja tarkastella muistiinpanoja, 
 - Käyttäjä voi luoda itselleen käyttäjätunnuksen ja salasanan
 - Käyttäjä voi kirjautua sisään tai ulos luodulla tunnuksella ja salasanalla
 - Käyttäjä voi luoda uusia muistiinpanoja, jotka ovat oletuksena vain ne luoneen käyttäjän muokattavissa ja luettavissa
-- Käyttäjä voi halutessaan jakaa muistiinpanon muiden käyttäjien kanssa, joko pelkällä lukuoikeudella tai myös kirjoitusoikeudella
+- Kirjoitusoikeudet olemassa olevaan muistiinpanoon omaava käyttäjä voi muokata muistiinpanon sisältöä
+- Muistiinpanoihin voi liittää tageja (WIP)
+- Käyttäjä voi halutessaan jakaa muistiinpanon muiden käyttäjien kanssa, joko pelkällä lukuoikeudella tai myös kirjoitusoikeudella (WIP)
+- Käyttäjä voi etsiä tagien avulla muistiinpanoja, joihin hänellä on lukuoikeus (WIP)
+
+Ominaisuuksia jotka saatetaan toteuttaa, käytettävissä olevasta ajasta ym. riippuen:
 - Muistiinpanoon lukuoikeudet omaava käyttäjä voi liittää muistiinpanoon muistutuksen, joka käytännössä aiheuttaa jonkinnäköisen muistiinpanoon liittyvän pop-upin ohjelman käyttöliittymässä määriteltynä ajanhetkenä
-- Kirjoitusoikeudet olemassa olevaan muistiinpanoon omaava käyttäjä voi muokata muistiinpanon sisältöä, tai liittää siihen tageja
-- Käyttäjä voi etsiä tagien avulla muistiinpanoja, joihin hänellä on lukuoikeus
+- Käyttäjän muistiinpanot ja muut arkaluontoiset tiedot salakirjoitetaan tietokantaan
 
 Alla on tietokantakaavio, josta ilmenee taulut ja niiden relaatiot muistiinpanoihin liittyvälle toiminnallisuudelle. Tämä kaavio voi laajentua myöhemmin, jos/kun ohjelmaan tulee lisää toiminnallisuutta:
 
