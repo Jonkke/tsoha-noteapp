@@ -2,26 +2,52 @@
 
 {% block body %}
 <table>
-    <tr>
-        <th>Note</th>
-    </tr>
-    {% for note in notes %}
-    <tr>
-        <td>{{ note.title }}</td>
-        <td>{{ note.content }}</td>
-        <td>CREATED BY: {{ note.creator.username }}</td>
-        <td>LAST EDIT BY: {{ note.last_editor.username }}</td>>
-        <td>
-            <form method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}">
-                <input type="submit" value="Delete">
-            </form>
-        </td>
-        <td>
-            <form method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
-                <input type="submit" value="Edit">
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
+  <tr>
+    <th>Note</th>
+  </tr>
+  {% for note in notes %}
+  <div class="card-deck">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{note.title}}</h5>
+        <p class="card-text">{{ note.content }}</p>
+        <small class="text-right text-muted">{{ note.creator.username }}</small>
+      </div>
+      <td>{{ note.title }}</td>
+      <td>{{ note.content }}</td>
+      <td>CREATED BY: {{ note.creator.username }}</td>
+      <td>LAST EDIT BY: {{ note.last_editor.username }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}">
+          <input type="submit" value="Delete" />
+        </form>
+      </td>
+      <td>
+        <form method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
+          <input type="submit" value="Edit" />
+        </form>
+      </td>
+    </div>
+  </div>
+  {% endfor %}
 </table>
 {% endblock %}
+
+
+
+<!-- <tr>
+  <td>{{ note.title }}</td>
+  <td>{{ note.content }}</td>
+  <td>CREATED BY: {{ note.creator.username }}</td>
+  <td>LAST EDIT BY: {{ note.last_editor.username }}</td>>
+  <td>
+    <form method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}">
+      <input type="submit" value="Delete">
+    </form>
+  </td>
+  <td>
+    <form method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
+      <input type="submit" value="Edit">
+    </form>
+  </td>
+</tr> -->

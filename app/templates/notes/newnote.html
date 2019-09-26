@@ -4,39 +4,68 @@
 {% if note is defined %}
 
 <form id="noteform" method="POST" action="{{ url_for('notes_update', note_id=note.id) }}">
-    <input type="text" name="title" value="{{ note.title }}">
-    <textarea name="content" form="noteform" cols="30" rows="10">{{ note.content }}</textarea>
-    <input type="checkbox" name="is_shared" {{"checked" if note.is_shared else "" }}>
-    <input type="submit" value="Update note">
+  <input type="text" name="title" value="{{ note.title }}">
+  <textarea name="content" form="noteform" cols="30" rows="10">{{ note.content }}</textarea>
+  <input type="checkbox" name="is_shared" {{"checked" if note.is_shared else "" }}>
+  <input type="submit" value="Update note">
 </form>
 {% else %}
 <form id="noteform" method="POST" action="{{ url_for('notes_create') }}">
-    <table>
-        <tr>
-            <td>{{form.title.label}}</td>
-            <td>{{form.title}}</td>
-            <td>
-                <ul>
-                    {% for error in form.title.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </td>
-        </tr>
-        <tr>
-            <td>{{form.content.label}}</td>
-            <td>{{form.content}}</td>
-        </tr>
-        <tr>
-            <td>{{form.is_shared.label}}</td>
-            <td>{{form.is_shared}}</td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="Add note">
-            </td>
-        </tr>
-    </table>
+  <div class="form-group">
+
+    {{form.title.label}}
+    {{form.title(class_="form-control")}}
+    <ul>
+      {% for error in form.title.errors %}
+      <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+
+    {{form.content.label}}
+    {{form.content(class_="form-control")}}
+
+    <div class="form-check">
+      {{form.is_shared(class_="form-check-input")}}
+      {{form.is_shared.label}}
+    </div>
+
+
+    <input class="btn btn-primary" type="submit" value="Add note">
+
+
+  </div>
 </form>
 {% endif %}
 {% endblock %}
+
+
+
+
+<!-- <form id="noteform" method="POST" action="{{ url_for('notes_create') }}">
+    <table>
+      <tr>
+        <td>{{form.title.label}}</td>
+        <td>{{form.title}}</td>
+        <td>
+          <ul>
+            {% for error in form.title.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>{{form.content.label}}</td>
+        <td>{{form.content}}</td>
+      </tr>
+      <tr>
+        <td>{{form.is_shared.label}}</td>
+        <td>{{form.is_shared}}</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="submit" value="Add note">
+        </td>
+      </tr>
+    </table>
+  </form> -->
