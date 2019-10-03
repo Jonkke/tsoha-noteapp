@@ -9,3 +9,9 @@ class NoteForm(FlaskForm):
 
     class Meta:
         csrf = False
+
+class NoteSearchForm(FlaskForm):
+    search_str = StringField("Search by tag:", [validators.Length(min=1)])
+
+    class Meta:
+        csrf = False

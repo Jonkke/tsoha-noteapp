@@ -2,6 +2,13 @@
 
 {% block body %}
 <div class="container">
+  <form method="POST" class="form-inline" action="{{ url_for('notes_search') }}">
+    <div class="form-group mb-4">
+      {{ form.search_str.label }}
+      {{ form.search_str(class_="form-control") }}
+    </div>
+    <button class="btn btn-primary mb-4 ml-2" type="submit">Search</button>
+  </form>
   <h3 class="mb-6">Notes</h3>
   {% for note in notes %}
   <div class="card mb-3">

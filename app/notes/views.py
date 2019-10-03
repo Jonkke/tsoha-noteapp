@@ -3,14 +3,29 @@ from flask import redirect, url_for, render_template, request
 from flask_login import login_required, current_user
 
 from app.notes.models import Note, Tag
-from app.notes.forms import NoteForm
+from app.notes.forms import NoteForm, NoteSearchForm
 
 @app.route("/notes", methods=["GET"])
 @login_required
 def notes_index():
     #notes = Note.query.all()
     notes = current_user.readableNotes
-    return render_template("notes/notelist.html", notes=notes)
+    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm())
+
+@app.route("/notes/search", methods=["POST"])
+@login_required
+def notes_search():
+    form = NoteSearchForm(request.form)
+    searchedTags = form.search_str.data.split()
+    notes = current_user.readableNotes
+    filteredNotes = []
+    for note in notes:
+        for tag in note.tags:
+            if searchedTags.count(tag.name):
+                filteredNotes.append(note)
+                break
+
+    return render_template("notes/notelist.html", notes=filteredNotes, form=NoteSearchForm())
 
 @app.route("/notes/new")
 @login_required
