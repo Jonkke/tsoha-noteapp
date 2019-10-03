@@ -28,7 +28,7 @@ def notes_create():
     note = Note(form.title.data, form.content.data, current_user.id, form.is_shared.data, 0)
     db.session().add(note)
 
-    # parse tags & associate with this note (BROKEN AF)
+    # parse tags & associate with this note
     # tags = form.tags.data.split()
     # allTags = Tag.query.all()
     # for tagStr in tags:
@@ -83,7 +83,9 @@ def notes_update(note_id):
     note.last_editor_id = current_user.id
     db.session().commit()
 
-    return render_template("notes/notelist.html", notes=Note.query.all())
+    notes = current_user.readableNotes
+
+    return render_template("notes/notelist.html", notes=notes)
 
 @app.route("/notes/delete/<note_id>/", methods=["POST"])
 @login_required
@@ -96,4 +98,6 @@ def notes_delete(note_id):
     db.session().delete(note)
     db.session().commit()
 
-    return render_template("notes/notelist.html", notes=Note.query.all())
+    notes = current_user.readableNotes
+
+    return render_template("notes/notelist.html", notes=notes)
