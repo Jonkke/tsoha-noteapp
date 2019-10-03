@@ -5,18 +5,22 @@ from flask_login import login_required, current_user
 from app.notes.models import Note, Tag
 from app.notes.forms import NoteForm, NoteSearchForm
 
+
 @app.route("/notes", methods=["GET"])
 @login_required
 def notes_index():
-    #notes = Note.query.all()
     notes = current_user.readableNotes
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm())
+    noNotesMsg = "No notes to display." if not notes else ""
+    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), noNotesMsg=noNotesMsg)
+
 
 @app.route("/notes/search", methods=["POST"])
 @login_required
 def notes_search():
     form = NoteSearchForm(request.form)
-    searchedTags = form.search_str.data.split()
+    searchedTags = list(form.search_str.data.split())
+    if not searchedTags:
+        return redirect(url_for("notes_index"))
     notes = current_user.readableNotes
     filteredNotes = []
     for note in notes:
@@ -25,12 +29,16 @@ def notes_search():
                 filteredNotes.append(note)
                 break
 
-    return render_template("notes/notelist.html", notes=filteredNotes, form=NoteSearchForm())
+    noNotesMsg = "Search did not match any notes." if not filteredNotes else ""
+
+    return render_template("notes/notelist.html", notes=filteredNotes, form=NoteSearchForm(), activeFilterTags=searchedTags, noNotesMsg=noNotesMsg)
+
 
 @app.route("/notes/new")
 @login_required
 def notes_form():
     return render_template("notes/newnote.html", form=NoteForm())
+
 
 @app.route("/notes/", methods=["POST"])
 @login_required
@@ -40,7 +48,8 @@ def notes_create():
     if not form.validate():
         return render_template("notes/newnote.html", form=form)
 
-    note = Note(form.title.data, form.content.data, current_user.id, form.is_shared.data, 0)
+    note = Note(form.title.data, form.content.data,
+                current_user.id, form.is_shared.data, 0)
 
     # parse tags & associate with this note
     formTagNames = list(dict.fromkeys(form.tags.data.split()))
@@ -53,7 +62,8 @@ def notes_create():
     if newTags:
         db.session().add_all(newTags)
 
-    associatedTags = list(filter(lambda tag: formTagNames.count(tag.name), Tag.query.all()))
+    associatedTags = list(
+        filter(lambda tag: formTagNames.count(tag.name), Tag.query.all()))
     note.tags = associatedTags
     db.session().add(note)
 
@@ -65,6 +75,7 @@ def notes_create():
     db.session().commit()
 
     return redirect(url_for("notes_index"))
+
 
 @app.route("/notes/<note_id>", methods=["GET"])
 @login_required
@@ -80,6 +91,7 @@ def notes_edit(note_id):
     form.is_shared.data = note.is_shared
     form.tags.data = " ".join(map(str, note.tags.all()))
     return render_template("notes/newnote.html", form=form, note_id=note.id)
+
 
 @app.route("/notes/edit/<note_id>/", methods=["POST"])
 @login_required
@@ -110,13 +122,15 @@ def notes_update(note_id):
     if newTags:
         db.session().add_all(newTags)
 
-    associatedTags = list(filter(lambda tag: formTagNames.count(tag.name), Tag.query.all()))
+    associatedTags = list(
+        filter(lambda tag: formTagNames.count(tag.name), Tag.query.all()))
     note.tags = associatedTags
 
     db.session().commit()
 
     notes = current_user.readableNotes
     return render_template("notes/notelist.html", notes=notes)
+
 
 @app.route("/notes/delete/<note_id>/", methods=["POST"])
 @login_required

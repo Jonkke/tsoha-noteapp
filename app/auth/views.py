@@ -29,12 +29,15 @@ def register_user():
     db.session().add(new_user)
     db.session().commit()
 
-    return redirect(url_for("auth_login"))
+    return redirect(url_for("auth_login", regSuccess="1"))
 
 @app.route("/auth/login", methods=["GET", "POST"])
 def auth_login():
     if request.method == "GET":
-        return render_template("auth/loginform.html", form=LoginForm())
+        regSuccessMsg = ""
+        if request.args.get("regSuccess"):
+            regSuccessMsg = "Successfully registered new user! You can now log in."
+        return render_template("auth/loginform.html", form=LoginForm(), regSuccessMsg=regSuccessMsg)
 
     form = LoginForm(request.form)
 

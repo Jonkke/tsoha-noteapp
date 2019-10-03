@@ -4,18 +4,29 @@
 <div class="container">
   <form method="POST" class="form-inline" action="{{ url_for('notes_search') }}">
     <div class="form-group mb-4">
-      {{ form.search_str.label }}
+      {{ form.search_str.label(class_="mr-4") }}
       {{ form.search_str(class_="form-control") }}
     </div>
     <button class="btn btn-primary mb-4 ml-2" type="submit">Search</button>
   </form>
+  {% if activeFilterTags %}
+  <div>
+    <small>Active filter tags:</small>
+    {% for tag in activeFilterTags %}
+      <small>{{ tag }}</small>
+    {% endfor %}
+  </div>
+  {% endif %}
   <h3 class="mb-6">Notes</h3>
+  {% if noNotesMsg %}
+  <p>{{ noNotesMsg }}</p>
+  {% endif %}
   {% for note in notes %}
   <div class="card mb-3">
     <div class="card-body">
       <h5 class="card-title">{{note.title}}</h5>
       <p class="card-text">{{ note.content }}</p>
-      <div class="tags">
+      <div class="tags mb-3">
         <small>tags:</small>
         <small>
           {% for tag in note.tags %}
