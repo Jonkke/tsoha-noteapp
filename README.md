@@ -8,23 +8,26 @@ Test account credentials for the Heroku app:
 Username: testi  
 Password: passu
 
-## Muistiinpano- ja ajanseuraamisohjelma
+## Dokumentaatio
 
-Tarkoituksena on luoda ohjelma, jolla voi tehdä ja tarkastella muistiinpanoja, kuin myös seurata esimerkiksi kursseihin ja opiskeluun käytettyä aikaa tietyllä aikavälillä. Tässä vaiheessa tietokantakaaviossa on vasta pelkkiin muistiinpanoihin liittyvät taulut ja relaatiot. Alla listattuna ohjelmaan tässä vaiheessa liittyviä toiminnallisuuksia:
+[Aihekuvaus & käyttäjätarinat](docs/userstories.md)
 
-- Käyttäjä voi luoda itselleen käyttäjätunnuksen ja salasanan
-- Käyttäjä voi kirjautua sisään tai ulos luodulla tunnuksella ja salasanalla
-- Käyttäjä voi luoda uusia muistiinpanoja, jotka ovat oletuksena vain ne luoneen käyttäjän muokattavissa ja luettavissa
-- Kirjoitusoikeudet olemassa olevaan muistiinpanoon omaava käyttäjä voi muokata muistiinpanon sisältöä
-- Muistiinpanoihin voi liittää tageja (WIP)
-- Käyttäjä voi halutessaan jakaa muistiinpanon muiden käyttäjien kanssa, joko pelkällä lukuoikeudella tai myös kirjoitusoikeudella (WIP)
-- Käyttäjä voi etsiä tagien avulla muistiinpanoja, joihin hänellä on lukuoikeus (WIP)
+## Asennus (Linux & Mac)
 
-Ominaisuuksia jotka saatetaan toteuttaa, käytettävissä olevasta ajasta ym. riippuen:
-- Muistiinpanoon lukuoikeudet omaava käyttäjä voi liittää muistiinpanoon muistutuksen, joka käytännössä aiheuttaa jonkinnäköisen muistiinpanoon liittyvän pop-upin ohjelman käyttöliittymässä määriteltynä ajanhetkenä
-- Käyttäjän muistiinpanot ja muut arkaluontoiset tiedot salakirjoitetaan tietokantaan
-
-Alla on tietokantakaavio, josta ilmenee taulut ja niiden relaatiot muistiinpanoihin liittyvälle toiminnallisuudelle. Tämä kaavio voi laajentua myöhemmin, jos/kun ohjelmaan tulee lisää toiminnallisuutta:
-
-![Tietokantakaavio](docs/initialDiagram.png)
-
+Ennen kuin aloitat, varmista että Pythonin versio 3.5 (tai uudempi) sekä Pythonin PIP-kirjasto ovat asennettuna. Kloonaa tämä repositorio koneellesi ja mene kloonattuun kansioon komentoriviltä. Luo sitten virutaaliympäristö komennolla
+```
+python3 -m venv venv
+```
+Aktivoi tämän jälkeen virtuaaliympäristö komennolla
+```
+source venv/bin/activate
+```
+Virtuaaliympäristön pitäisi olla nyt aktivoitu, minkä voit nähdä komentoriville rivin eteen ilmestyvästä (venv) -tekstistä. Asenna seuraavaksi projektin riippuvuudet, jotka siis asentuvat vain tähän aktiiviseen virtuaaliympäristöön. Tee tämä komennolla
+```
+pip install -r requirements.txt
+```
+Kaiken pitäisi nyt olla valmiina ohjelman ajamista varten. Aja ohjelma komennolla
+```
+python run.py
+```
+Tämän jälkeen voit avata selaimen ja kirjoittaa osoiteriville "127.0.0.1:5000". Ohjelman pitäisi nyt avautua tarkasteltavaksi.
