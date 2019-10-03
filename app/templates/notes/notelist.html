@@ -8,16 +8,27 @@
     <div class="card-body">
       <h5 class="card-title">{{note.title}}</h5>
       <p class="card-text">{{ note.content }}</p>
-      <small class="text-muted float-right">created by: {{ note.creator.username }} | last edit by:
-        {{ note.last_editor.username }}
-      </small>
-      <div class="btn-group">
-        <form class="form-inline pull-left" method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
-          <button class="btn btn-primary mr-3" type="submit">Edit</button>
-        </form>
-        <form class="form-inline" method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}" onsubmit="return confirm('Delete note?');">
-          <button class="btn btn-primary" type="submit">Delete</button>
-        </form>
+      <div class="tags">
+        <small>tags:</small>
+        <small>
+          {% for tag in note.tags %}
+          {{ tag }}
+          {% endfor %}
+        </small>
+      </div>
+      <div>
+        <small class="text-muted float-right">created by: {{ note.creator.username }} | last edit by:
+          {{ note.last_editor.username }}
+        </small>
+        <div class="btn-group">
+          <form class="form-inline pull-left" method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
+            <button class="btn btn-primary mr-3" type="submit">Edit</button>
+          </form>
+          <form class="form-inline" method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}"
+            onsubmit="return confirm('Delete note?');">
+            <button class="btn btn-primary" type="submit">Delete</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>

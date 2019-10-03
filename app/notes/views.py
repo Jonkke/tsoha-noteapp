@@ -26,19 +26,21 @@ def notes_create():
         return render_template("notes/newnote.html", form=form)
 
     note = Note(form.title.data, form.content.data, current_user.id, form.is_shared.data, 0)
-    db.session().add(note)
 
     # parse tags & associate with this note
-    # tags = form.tags.data.split()
-    # allTags = Tag.query.all()
-    # for tagStr in tags:
-    #     tag = allTags.filter_by(name=tagStr).first()
-    #     if tag is None:
-    #         tag = Tag(tagStr)
-    #         db.session().add(tag)
-    #         db.session().commit()
-    #     with db.session.no_autoflush:
-    #         note.tags.append(tag)
+    formTagNames = list(dict.fromkeys(form.tags.data.split()))
+    oldTagNames = list(map(lambda tag: tag.name, Tag.query.all()))
+    newTags = []
+    for tagName in formTagNames:
+        if not oldTagNames.count(tagName):
+            newTags.append(Tag(tagName))
+
+    if newTags:
+        db.session().add_all(newTags)
+
+    associatedTags = list(filter(lambda tag: formTagNames.count(tag.name), Tag.query.all()))
+    note.tags = associatedTags
+    db.session().add(note)
 
     # add read and write right to creator of this note
     current_user.readableNotes.append(note)
@@ -81,10 +83,24 @@ def notes_update(note_id):
     note.content = request.form.get("content")
     note.is_shared = 1 if request.form.get("is_shared") == "on" else 0
     note.last_editor_id = current_user.id
+
+    # update tags
+    formTagNames = list(dict.fromkeys(form.tags.data.split()))
+    oldTagNames = list(map(lambda tag: tag.name, Tag.query.all()))
+    newTags = []
+    for tagName in formTagNames:
+        if not oldTagNames.count(tagName):
+            newTags.append(Tag(tagName))
+
+    if newTags:
+        db.session().add_all(newTags)
+
+    associatedTags = list(filter(lambda tag: formTagNames.count(tag.name), Tag.query.all()))
+    note.tags = associatedTags
+
     db.session().commit()
 
     notes = current_user.readableNotes
-
     return render_template("notes/notelist.html", notes=notes)
 
 @app.route("/notes/delete/<note_id>/", methods=["POST"])
