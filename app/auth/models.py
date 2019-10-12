@@ -1,16 +1,37 @@
-import random, string
+import random
+import string
 from app import db
 from app.models import Base
+from sqlalchemy.ext.declarative import declarative_base
+
+table_base = declarative_base()
 
 userNoteRead = db.Table("userNoteRead",
-                        db.Column("user_id", db.Integer, db.ForeignKey("account.id"), primary_key=True),
-                        db.Column("note_id", db.Integer, db.ForeignKey("note.id"), primary_key=True)
-)
+                        db.Column("user_id", db.Integer, db.ForeignKey(
+                            "account.id"), primary_key=True),
+                        db.Column("note_id", db.Integer, db.ForeignKey(
+                            "note.id"), primary_key=True)
+                        )
 
 userNoteWrite = db.Table("userNoteWrite",
-                        db.Column("user_id", db.Integer, db.ForeignKey("account.id"), primary_key=True),
-                        db.Column("note_id", db.Integer, db.ForeignKey("note.id"), primary_key=True)
-)
+                         db.Column("user_id", db.Integer, db.ForeignKey(
+                             "account.id"), primary_key=True),
+                         db.Column("note_id", db.Integer, db.ForeignKey(
+                             "note.id"), primary_key=True)
+                         )
+
+userContact = db.Table("userContact", db.Model.metadata,
+                       db.Column("user_id", db.Integer, db.ForeignKey(
+                           "account.id"), primary_key=True),
+                       db.Column("contact_id", db.Integer, db.ForeignKey(
+                           "account.id"), primary_key=True),
+                       db.Column("inviter", db.Integer, db.ForeignKey(
+                           "account.id"), nullable=False),
+                       db.Column("confirmed", db.Boolean, default=False),
+                       db.Column("date_contacted", db.DateTime,
+                                 default=db.func.current_timestamp())
+                       )
+
 
 class User(Base):
     __tablename__ = "account"
@@ -19,21 +40,30 @@ class User(Base):
     password_hash = db.Column(db.String(144), nullable=False)
     five_letter_identifier = db.Column(db.String(5), nullable=False)
     readableNotes = db.relationship("Note", secondary=userNoteRead, lazy="subquery",
-        backref=db.backref("readUsers", lazy="dynamic"))
+                                    backref=db.backref("readUsers", lazy="dynamic"))
     writableNotes = db.relationship("Note", secondary=userNoteWrite, lazy="subquery",
-        backref=db.backref("writeUsers", lazy="dynamic"))
+                                    backref=db.backref("writeUsers", lazy="dynamic"))
+    contacts = db.relationship("User",
+                               secondary=userContact,
+                               #    primaryjoin=id == userContact.c.user_id,
+                               #    secondaryjoin=id == userContact.c.contact_id,
+                               primaryjoin="User.id == userContact.c.user_id",
+                               secondaryjoin="User.id == userContact.c.contact_id",
+                               backref=db.backref("contactees", lazy="dynamic")
+                               )
 
     def __init__(self, username, password_hash):
         self.username = username
         self.password_hash = password_hash
-        
-        char_pool = string.ascii_uppercase.join(string.digits)
-        #five_letter_identifier = "".join(random.choice(char_pool) for i in range(5))
-        five_letter_identifier = "DERP5"
-        # loop
-        rs = db.engine.execute("SELECT * FROM account WHERE five_letter_identifier = :fli", {"fli": five_letter_identifier})
-        print("\n\nRS:")
-        print(rs)
+
+        char_pool = string.ascii_uppercase.join(
+            string.digits).join(string.digits)
+        five_letter_identifier = "".join(
+            random.choice(char_pool) for i in range(5))
+        # loop while identifier already in use
+        while len(db.session.execute("SELECT * FROM account WHERE five_letter_identifier = :fli", {"fli": five_letter_identifier}).fetchall()):
+            five_letter_identifier = "".join(
+                random.choice(char_pool) for i in range(5))
         self.five_letter_identifier = five_letter_identifier
 
     def get_id(self):

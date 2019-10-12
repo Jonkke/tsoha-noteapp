@@ -1,13 +1,13 @@
 from flask import render_template, request, redirect, url_for
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 
 from app import app, db
 from app.auth.models import User
-from app.auth.forms import LoginForm
-from app.auth.forms import RegisterForm
+from app.auth.forms import LoginForm, RegisterForm, PasswordChangeForm, InviteForm
 
 bcrypt = Bcrypt(app)
+
 
 @app.route("/auth/register", methods=["GET", "POST"])
 def register_user():
@@ -31,6 +31,7 @@ def register_user():
 
     return redirect(url_for("auth_login", regSuccess="1"))
 
+
 @app.route("/auth/login", methods=["GET", "POST"])
 def auth_login():
     if request.method == "GET":
@@ -48,7 +49,72 @@ def auth_login():
     login_user(user)
     return redirect(url_for("notes_index"))
 
+
 @app.route("/auth/logout", methods=["GET"])
+@login_required
 def auth_logout():
     logout_user()
     return redirect(url_for("auth_login"))
+
+
+@app.route("/auth/settings", methods=["GET"])
+@login_required
+def auth_settings():
+    return render_template("auth/accountsettings.html", userinfo=get_user_info(), contactlist=get_contact_list(), pwchangeform=PasswordChangeForm(), inviteForm=InviteForm())
+
+
+@app.route("/auth/pwupdate", methods=["POST"])
+@login_required
+def auth_pwupdate():
+    form = PasswordChangeForm(request.form)
+    if not bcrypt.check_password_hash(current_user.password_hash, form.oldpassword.data):
+        return render_template("auth/accountsettings.html", userinfo=get_user_info(), contactlist=get_contact_list(), pwchangeform=PasswordChangeForm(), passwordMsg="Wrong password.", inviteForm=InviteForm())
+
+    pw_hash = bcrypt.generate_password_hash(
+        form.newpassword.data).decode("utf-8")
+    current_user.password_hash = pw_hash
+    db.session().commit()
+
+    return render_template("auth/accountsettings.html", userinfo=get_user_info(), contactlist=get_contact_list(), pwchangeform=PasswordChangeForm(), passwordMsg="Password has been changed.", inviteForm=InviteForm())
+
+
+@app.route("/auth/invitecontact", methods=["POST"])
+@login_required
+def auth_invite():
+    inviteForm = InviteForm(request.form)
+    if not inviteForm.validate():
+        return render_template("auth/accountsettings.html", userinfo=get_user_info(),
+                               contactlist=get_contact_list(), pwchangeform=PasswordChangeForm(), inviteForm=inviteForm)
+
+    invitedUser = User.query.filter_by(
+        five_letter_identifier=inviteForm.user_identifier.data).first()
+    if invitedUser:
+        query = "INSERT INTO userContact (user_id, contact_id, inviter, confirmed) VALUES (:uid1, :uid2, :inv, 0)"
+        # current_user.contacts.append(invitedUser)
+        # invitedUser.contacts.append(current_user)
+        # db.session().commit()
+        db.session.execute(query, {'uid1': current_user.id, 'uid2': invitedUser.id, 'inv': current_user.id})
+        db.session.execute(query, {'uid1': invitedUser.id, 'uid2': current_user.id, 'inv': current_user.id})
+        db.session.commit()
+
+    return render_template("auth/accountsettings.html", userinfo=get_user_info(),
+                           contactlist=get_contact_list(), pwchangeform=PasswordChangeForm(), inviteForm=inviteForm, invitedDoneMsg="Invitation sent, awaiting confirmation from the other user.")
+
+
+# helpers
+def get_user_info():
+    return {
+        "username": current_user.username,
+        "five_letter_identifier": current_user.five_letter_identifier,
+        "numcontacts": len(current_user.contacts)
+    }
+
+
+def get_contact_list():
+    query = "SELECT * FROM (account a JOIN userContact uc ON uc.contact_id = :uid AND uc.confirmed = 1) WHERE a.id != :uid"
+    rs = db.session.execute(query, {'uid': current_user.id})
+    contacts = []
+    for r in rs:
+        contacts.append(dict(r.items()))
+    return list(
+        map(lambda contact: {"username": contact["username"]}, contacts))
