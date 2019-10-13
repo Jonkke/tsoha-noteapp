@@ -95,7 +95,7 @@ def auth_invite():
             if (contact["id"] == invitedUser.id):
                 return render_accountsettings(inviteForm=inviteForm)
 
-        query = "INSERT INTO user_contact (user_id, contact_id, inviter, confirmed) VALUES (:uid1, :uid2, :inv, 0)"
+        query = "INSERT INTO user_contact (user_id, contact_id, inviter, confirmed) VALUES (:uid1, :uid2, :inv, '0')"
         # current_user.contacts.append(invitedUser)
         # invitedUser.contacts.append(current_user)
         # db.session().commit()
@@ -111,7 +111,7 @@ def auth_invite():
 @app.route("/auth/acceptcontact/<contact_id>", methods=["POST"])
 @login_required
 def accept_contact(contact_id):
-    query = "UPDATE user_contact SET confirmed=1 WHERE user_id=:uid1 AND contact_id=:uid2"
+    query = "UPDATE user_contact SET confirmed='1' WHERE user_id=:uid1 AND contact_id=:uid2"
     db.session().execute(query, {'uid1': current_user.id, 'uid2': contact_id})
     db.session().execute(query, {'uid1': contact_id, 'uid2': current_user.id})
     db.session().commit()
