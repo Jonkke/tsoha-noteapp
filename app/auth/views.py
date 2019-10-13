@@ -121,6 +121,10 @@ def accept_contact(contact_id):
 @app.route("/auth/rejectcontact<contact_id>", methods=["POST"])
 @login_required
 def reject_contact(contact_id):
+    query = "DELETE FROM userContact WHERE user_id = :uid1 AND contact_id = :uid2"
+    db.session.execute(query, {'uid1': current_user.id, 'uid2': contact_id})
+    db.session.execute(query, {'uid1': contact_id, 'uid2': current_user.id})
+    db.session.commit()
     return redirect(url_for("auth_settings"))
 
 # helpers
@@ -171,7 +175,8 @@ def render_accountsettings(get_user_info=get_user_info,
     return render_template("auth/accountsettings.html", userinfo=get_user_info(),
                            contactlist=get_contact_list(),
                            pendingContactList=get_pending_contacts(),
-                           pwchangeform=passwordChangeForm if passwordChangeForm else PasswordChangeForm(passwordChangeForm),
+                           pwchangeform=passwordChangeForm if passwordChangeForm else PasswordChangeForm(
+                               passwordChangeForm),
                            passwordMsg=passwordMsg,
                            inviteForm=inviteForm if inviteForm else InviteForm(),
                            invitedDoneMsg=invitedDoneMsg)
