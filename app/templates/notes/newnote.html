@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-{% if note_id is defined %}
+{% if note_id %}
 <form id="noteform" method="POST" action="{{ url_for('notes_update', note_id=note_id) }}">
   <div class="form-group">Edit note:</div>
   <div class="form-group">
@@ -16,8 +16,24 @@
     {{ form.content.label }}
     {{ form.content(class_="form-control") }}
 
+    <div>
+      <p>Users with read rights (click to remove rights):</p>
+      {% for user in read_users %}
+      <a href="{{ url_for('note_remove_rights', user_id=user.id, note_id=note_id, write_only='') }}">{{ user.username }}</a>
+      {% endfor %}
+    </div>
+    <div>
+        <p>Users with write rights (click to remove rights):</p>
+        {% for user in write_users %}
+        <a href="">{{ user.username }}</a>
+        {% endfor %}
+      </div>
+
+    {% if allowsharing %}
+    <h4>You are the owner of this note. You may share it with others on your contacts list:</h4>
     {{ form.sharewith.label }}
     {{ form.sharewith(class_="custom-select custom-select-sm") }}
+    {% endif %}
 
     {{ form.tags.label }}
     {{ form.tags(class_="form-control") }}
