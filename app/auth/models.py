@@ -6,21 +6,21 @@ from sqlalchemy.ext.declarative import declarative_base
 
 table_base = declarative_base()
 
-userNoteRead = db.Table("userNoteRead",
+user_note_read = db.Table("user_note_read",
                         db.Column("user_id", db.Integer, db.ForeignKey(
                             "account.id"), primary_key=True),
                         db.Column("note_id", db.Integer, db.ForeignKey(
                             "note.id"), primary_key=True)
                         )
 
-userNoteWrite = db.Table("userNoteWrite",
+user_note_write = db.Table("user_note_write",
                          db.Column("user_id", db.Integer, db.ForeignKey(
                              "account.id"), primary_key=True),
                          db.Column("note_id", db.Integer, db.ForeignKey(
                              "note.id"), primary_key=True)
                          )
 
-userContact = db.Table("userContact", db.Model.metadata,
+user_contact = db.Table("user_contact", db.Model.metadata,
                        db.Column("user_id", db.Integer, db.ForeignKey(
                            "account.id"), primary_key=True),
                        db.Column("contact_id", db.Integer, db.ForeignKey(
@@ -39,16 +39,16 @@ class User(Base):
     username = db.Column(db.String(144), nullable=False)
     password_hash = db.Column(db.String(144), nullable=False)
     five_letter_identifier = db.Column(db.String(5), nullable=False)
-    readableNotes = db.relationship("Note", secondary=userNoteRead, lazy="subquery",
+    readableNotes = db.relationship("Note", secondary=user_note_read, lazy="subquery",
                                     backref=db.backref("readUsers", lazy="dynamic"))
-    writableNotes = db.relationship("Note", secondary=userNoteWrite, lazy="subquery",
+    writableNotes = db.relationship("Note", secondary=user_note_write, lazy="subquery",
                                     backref=db.backref("writeUsers", lazy="dynamic"))
     contacts = db.relationship("User",
-                               secondary=userContact,
-                               #    primaryjoin=id == userContact.c.user_id,
-                               #    secondaryjoin=id == userContact.c.contact_id,
-                               primaryjoin="User.id == userContact.c.user_id",
-                               secondaryjoin="User.id == userContact.c.contact_id",
+                               secondary=user_contact,
+                               #    primaryjoin=id == user_contact.c.user_id,
+                               #    secondaryjoin=id == user_contact.c.contact_id,
+                               primaryjoin="User.id == user_contact.c.user_id",
+                               secondaryjoin="User.id == user_contact.c.contact_id",
                                backref=db.backref("contactees", lazy="dynamic")
                                )
 
@@ -61,7 +61,7 @@ class User(Base):
         five_letter_identifier = "".join(
             random.choice(char_pool) for i in range(5))
         # loop while identifier already in use
-        while len(db.session.execute("SELECT * FROM account WHERE five_letter_identifier = :fli", {"fli": five_letter_identifier}).fetchall()):
+        while len(db.session().execute("SELECT * FROM account WHERE five_letter_identifier = :fli", {"fli": five_letter_identifier}).fetchall()):
             five_letter_identifier = "".join(
                 random.choice(char_pool) for i in range(5))
         self.five_letter_identifier = five_letter_identifier
@@ -88,10 +88,10 @@ class User(Base):
     def get_contact_list(self, include_non_confirmed=False):
         query = ""
         if not include_non_confirmed:
-            query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 1) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
+            query = "SELECT * FROM (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 1) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
         else:
-            query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
-        rs = db.session.execute(query, {'uid': self.id})
+            query = "SELECT * FROM (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
+        rs = db.session().execute(query, {'uid': self.id})
         contacts = []
         for r in rs:
             contacts.append(dict(r.items()))
@@ -100,8 +100,8 @@ class User(Base):
                                  "username": contact["username"]}, contacts))
 
     def get_pending_contacts(self):
-        query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 0) ac WHERE ac.id != :uid AND ac.contact_id = :uid AND ac.inviter != :uid"
-        rs = db.session.execute(query, {'uid': self.id})
+        query = "SELECT * FROM (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 0) ac WHERE ac.id != :uid AND ac.contact_id = :uid AND ac.inviter != :uid"
+        rs = db.session().execute(query, {'uid': self.id})
         pendingContacts = []
         for r in rs:
             pendingContacts.append(dict(r.items()))

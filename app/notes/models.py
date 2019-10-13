@@ -2,7 +2,7 @@ from app import db
 from app.models import Base
 from sqlalchemy.orm import relationship
 
-noteTag = db.Table("noteTag",
+note_tag = db.Table("note_tag",
                     db.Column("note_id", db.Integer, db.ForeignKey("note.id"), primary_key=True),
                     db.Column("tag_id", db.Integer, db.ForeignKey("tag.id"), primary_key=True)
 )
@@ -15,7 +15,7 @@ class Note(Base):
     is_archived = db.Column(db.Boolean)
     creator = relationship("User", foreign_keys=[creator_id])
     last_editor = relationship("User", foreign_keys=[last_editor_id])
-    tags = db.relationship("Tag", secondary=noteTag, lazy="dynamic",
+    tags = db.relationship("Tag", secondary=note_tag, lazy="dynamic",
             backref=db.backref("notes", lazy="dynamic"))
 
     def __init__(self, title, content, creator_id, is_archived):
