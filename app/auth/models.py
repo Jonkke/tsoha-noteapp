@@ -77,3 +77,35 @@ class User(Base):
 
     def is_authenticated(self):
         return True
+
+    def get_user_info(self):
+        return {
+            "username": self.username,
+            "five_letter_identifier": self.five_letter_identifier,
+            "numcontacts": len(self.get_contact_list())
+        }
+
+    def get_contact_list(self, include_non_confirmed=False):
+        query = ""
+        if not include_non_confirmed:
+            query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 1) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
+        else:
+            query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
+        rs = db.session.execute(query, {'uid': self.id})
+        contacts = []
+        for r in rs:
+            contacts.append(dict(r.items()))
+        return list(
+            map(lambda contact: {"id": contact["id"],
+                                 "username": contact["username"]}, contacts))
+
+    def get_pending_contacts(self):
+        query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 0) ac WHERE ac.id != :uid AND ac.contact_id = :uid AND ac.inviter != :uid"
+        rs = db.session.execute(query, {'uid': self.id})
+        pendingContacts = []
+        for r in rs:
+            pendingContacts.append(dict(r.items()))
+        return list(
+            map(lambda pendingContact: {
+                "id": pendingContact["id"],
+                "username": pendingContact["username"]}, pendingContacts))

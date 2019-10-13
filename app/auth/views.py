@@ -91,7 +91,7 @@ def auth_invite():
         if invitedUser.id == current_user.id:
             return render_accountsettings(inviteForm=inviteForm)
 
-        for contact in get_contact_list(includeNonConfirmed=True):
+        for contact in current_user.get_contact_list(include_non_confirmed=True):
             if (contact["id"] == invitedUser.id):
                 return render_accountsettings(inviteForm=inviteForm)
 
@@ -130,51 +130,13 @@ def reject_contact(contact_id):
 # helpers
 
 
-def get_user_info():
-    return {
-        "username": current_user.username,
-        "five_letter_identifier": current_user.five_letter_identifier,
-        "numcontacts": len(current_user.contacts)
-    }
-
-
-def get_contact_list(includeNonConfirmed=False):
-    query = ""
-    if not includeNonConfirmed:
-        query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 1) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
-    else:
-        query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
-    rs = db.session.execute(query, {'uid': current_user.id})
-    contacts = []
-    for r in rs:
-        contacts.append(dict(r.items()))
-    return list(
-        map(lambda contact: {"id": contact["id"],
-                             "username": contact["username"]}, contacts))
-
-
-def get_pending_contacts():
-    query = "SELECT * FROM (account a INNER JOIN userContact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = 0) ac WHERE ac.id != :uid AND ac.contact_id = :uid AND ac.inviter != :uid"
-    rs = db.session.execute(query, {'uid': current_user.id})
-    pendingContacts = []
-    for r in rs:
-        pendingContacts.append(dict(r.items()))
-    return list(
-        map(lambda pendingContact: {
-            "id": pendingContact["id"],
-            "username": pendingContact["username"]}, pendingContacts))
-
-
-def render_accountsettings(get_user_info=get_user_info,
-                           get_contact_list=get_contact_list,
-                           get_pending_contacts=get_pending_contacts,
-                           passwordChangeForm=None,
+def render_accountsettings(passwordChangeForm=None,
                            inviteForm=None,
                            invitedDoneMsg="",
                            passwordMsg=""):
-    return render_template("auth/accountsettings.html", userinfo=get_user_info(),
-                           contactlist=get_contact_list(),
-                           pendingContactList=get_pending_contacts(),
+    return render_template("auth/accountsettings.html", userinfo=current_user.get_user_info(),
+                           contactlist=current_user.get_contact_list(),
+                           pendingContactList=current_user.get_pending_contacts(),
                            pwchangeform=passwordChangeForm if passwordChangeForm else PasswordChangeForm(
                                passwordChangeForm),
                            passwordMsg=passwordMsg,

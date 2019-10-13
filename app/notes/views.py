@@ -2,6 +2,7 @@ from app import app, db
 from flask import redirect, url_for, render_template, request
 from flask_login import login_required, current_user
 
+from app.auth.models import User
 from app.notes.models import Note, Tag
 from app.notes.forms import NoteForm, NoteSearchForm
 
@@ -37,20 +38,26 @@ def notes_search():
 @app.route("/notes/new")
 @login_required
 def notes_form():
-    return render_template("notes/newnote.html", form=NoteForm())
+    contacts = [{"id": 0, "username": "None"}] + current_user.get_contact_list()
+    form = NoteForm()
+    form.sharewith.choices = [(c["id"], c["username"]) for c in contacts]
+    return render_template("notes/newnote.html", form=form, contacts=contacts)
 
 
 @app.route("/notes/", methods=["POST"])
 @login_required
 def notes_create():
     form = NoteForm(request.form)
-
+    print("\n\n\nTÄÄLLÄ\n\n\n")
     if not form.validate():
+        for error in form.sharewith.errors:
+            print(error)
+        print("\n\njuu")
         return render_template("notes/newnote.html", form=form)
 
     note = Note(form.title.data, form.content.data,
-                current_user.id, form.is_shared.data, 0)
-
+                current_user.id, 0)
+    
     # parse tags & associate with this note
     formTagNames = list(dict.fromkeys(form.tags.data.split()))
     oldTagNames = list(map(lambda tag: tag.name, Tag.query.all()))
@@ -70,6 +77,12 @@ def notes_create():
     # add read and write right to creator of this note
     current_user.readableNotes.append(note)
     current_user.writableNotes.append(note)
+    # and to other(s) if shared
+    if form.sharewith.data != 0:
+        user = User.query.get(form.sharewith.data)
+        if user:
+            user.readableNotes.append(note)
+
     db.session().add(current_user)
 
     db.session().commit()
@@ -88,7 +101,6 @@ def notes_edit(note_id):
 
     form.title.data = note.title
     form.content.data = note.content
-    form.is_shared.data = note.is_shared
     form.tags.data = " ".join(map(str, note.tags.all()))
     return render_template("notes/newnote.html", form=form, note_id=note.id)
 
@@ -108,7 +120,6 @@ def notes_update(note_id):
 
     note.title = request.form.get("title")
     note.content = request.form.get("content")
-    note.is_shared = 1 if request.form.get("is_shared") == "on" else 0
     note.last_editor_id = current_user.id
 
     # update tags
