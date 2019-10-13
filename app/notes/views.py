@@ -26,9 +26,12 @@ def notes_search():
     filteredNotes = []
     for note in notes:
         for tag in note.tags:
-            if searchedTags.count(tag.name):
+            if [stag for stag in searchedTags if stag in tag.name]:
                 filteredNotes.append(note)
                 break
+            # if searchedTags.count(tag.name):
+            #     filteredNotes.append(note)
+            #     break
 
     noNotesMsg = "Search did not match any notes." if not filteredNotes else ""
 
