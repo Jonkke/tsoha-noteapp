@@ -54,6 +54,25 @@
                 </form>
             </div>
             <div>
+                <h5>Pending contacts</h5>
+                <ul class="list-group">
+                    {% for pendingContact in pendingContactList %}
+                    <li class="list-group-item">
+                        <div class="form-group">
+                            <p>{{ pendingContact.username }}</p>
+                            <p>id: {{ pendingContact.id }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('accept_contact', contact_id=pendingContact.id) }}">
+                            <button class="btn btn-primary" type="submit">Accept</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('reject_contact', contact_id=pendingContact.id) }}">
+                            <button class="btn btn-primary" type="submit">Reject</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
                 <ul class="list-group">
                     {% for contact in contactlist %}
                     <li class="list-group-item">
