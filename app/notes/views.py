@@ -164,12 +164,7 @@ def notes_update(note_id):
     db.session().commit()
 
     notes = current_user.readableNotes
-<<<<<<< HEAD
-    noNotesMsg = "No notes to display." if not notes else ""
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), noNotesMsg=noNotesMsg)
-=======
     return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id)
->>>>>>> usercontacts
 
 
 @app.route("/notes/delete/<note_id>/", methods=["POST"])
@@ -184,10 +179,6 @@ def notes_delete(note_id):
     db.session().commit()
 
     notes = current_user.readableNotes
-<<<<<<< HEAD
-    noNotesMsg = "No notes to display." if not notes else ""
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), noNotesMsg=noNotesMsg)
-=======
 
     return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id)
 
@@ -209,4 +200,3 @@ def render_newnote(form=None,
                            allowsharing=allowsharing,
                            read_users=read_users,
                            write_users=write_users)
->>>>>>> usercontacts
