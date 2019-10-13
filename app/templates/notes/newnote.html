@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-{% if note_id is defined %}
+{% if note_id %}
 <form id="noteform" method="POST" action="{{ url_for('notes_update', note_id=note_id) }}">
   <div class="form-group">Edit note:</div>
   <div class="form-group">
@@ -16,19 +16,32 @@
     {{ form.content.label }}
     {{ form.content(class_="form-control") }}
 
+    <div>
+      <p>Users with read rights (click to remove rights):</p>
+      {% for user in read_users %}
+      <a href="{{ url_for('note_remove_rights', user_id=user.id, note_id=note_id, write_only='') }}">{{ user.username }}</a>
+      {% endfor %}
+    </div>
+    <div>
+        <p>Users with write rights (click to remove rights):</p>
+        {% for user in write_users %}
+        <a href="">{{ user.username }}</a>
+        {% endfor %}
+      </div>
+
+    {% if allowsharing %}
+    <h4>You are the owner of this note. You may share it with others on your contacts list:</h4>
+    {{ form.sharewith.label }}
+    {{ form.sharewith(class_="custom-select custom-select-sm") }}
+    {% endif %}
+
     {{ form.tags.label }}
     {{ form.tags(class_="form-control") }}
-
-    <div class="form-check">
-      {{ form.is_shared(class_="form-check-input") }}
-      {{ form.is_shared.label }}
-    </div>
 
     <input class="btn btn-primary" type="submit" value="Update note">
 
     {#<input type="text" name="title" value="{{ note.title }}">
     <textarea name="content" form="noteform" cols="30" rows="10">{{ note.content }}</textarea>
-    <input type="checkbox" name="is_shared" {{"checked" if note.is_shared else "" }}>
     <input type="submit" value="Update note">#}
   </div>
 </form>
@@ -36,24 +49,22 @@
 <form id="noteform" method="POST" action="{{ url_for('notes_create') }}">
   <div class="form-group">Add a new note:</div>
   <div class="form-group">
-    {{form.title.label}}
-    {{form.title(class_="form-control")}}
+    {{ form.title.label }}
+    {{ form.title(class_="form-control") }}
     <ul>
       {% for error in form.title.errors %}
       <li>{{ error }}</li>
       {% endfor %}
     </ul>
 
-    {{form.content.label}}
-    {{form.content(class_="form-control")}}
+    {{ form.content.label }}
+    {{ form.content(class_="form-control") }}
+
+    {{ form.sharewith.label }}
+    {{ form.sharewith(class_="custom-select custom-select-sm") }}
 
     {{ form.tags.label }}
     {{ form.tags(class_="form-control") }}
-
-    <div class="form-check">
-      {{form.is_shared(class_="form-check-input")}}
-      {{form.is_shared.label}}
-    </div>
 
     <input class="btn btn-primary" type="submit" value="Add note">
 

@@ -40,7 +40,7 @@
         </small>
         <div class="btn-group">
           <form class="form-inline pull-left" method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
-            <button class="btn btn-primary mr-3" type="submit">Edit</button>
+            <button class="btn btn-primary mr-3" type="submit" {{ 'disabled' if uid != note.creator_id }}>Edit</button>
           </form>
           <form class="form-inline" method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}"
             onsubmit="return confirm('Delete note?');">

@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="content">
+    <div class="row">
+        <div class="col-sm">
+            <div class="info">
+                <h4 class="mb-4">Account information</h4>
+                <p>Username: {{ userinfo.username }}</p>
+                <p>Identifier: {{ userinfo.five_letter_identifier }}</p>
+                <p>Number of contacts: {{ userinfo.numcontacts }}</p>
+            </div>
+        </div>
+        <div class="col-sm">
+            <form method="POST" action="{{ url_for('auth_pwupdate') }}">
+                <div class="form-group">
+                    <h4>Change password:</h4>
+                </div>
+                <div class="form-group">
+                    {{ pwchangeform.oldpassword.label }}
+                    {{ pwchangeform.oldpassword(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ pwchangeform.newpassword.label }}
+                    {{ pwchangeform.newpassword(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit">Change password</button>
+                </div>
+                {% if passwordMsg %}
+                <p>{{ passwordMsg }}</p>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-xs">
+            <div>
+                <h4>Contacts</h4>
+                <form method="POST" action="{{ url_for('auth_invite') }}" class="form-inline">
+                    <div class="form-group">
+                        {{ inviteForm.user_identifier.label }}
+                        {{ inviteForm.user_identifier(class_="form-control") }}
+                    </div>
+                    {% for error in inviteForm.user_identifier.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                    {% if invitedDoneMsg %}
+                    <p>{{ invitedDoneMsg }}</p>
+                    {% endif %}
+                    <div class="form-group">
+                        <button class="btn btn-primary">Invite</button>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <h5>Pending contacts</h5>
+                <ul class="list-group">
+                    {% for pendingContact in pendingContactList %}
+                    <li class="list-group-item">
+                        <div class="form-group">
+                            <p>{{ pendingContact.username }}</p>
+                            <p>id: {{ pendingContact.id }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('accept_contact', contact_id=pendingContact.id) }}">
+                            <button class="btn btn-primary" type="submit">Accept</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('reject_contact', contact_id=pendingContact.id) }}">
+                            <button class="btn btn-primary" type="submit">Reject</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <ul class="list-group">
+                    {% for contact in contactlist %}
+                    <li class="list-group-item">
+                        <p>{{ contact.username }}</p>
+                        <p>{{ contact.added_date }}</p>
+                        <p>Confirmed: {{ contact.confirmed }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <ul class="list-group">
+                    {% for contact in userlist %}
+                    <li class="list-group-item">
+                        <p>{{ contact.username }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
