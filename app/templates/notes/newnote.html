@@ -37,6 +37,7 @@
             <p style="margin:0px;">Users with read rights (click to remove rights):</p>
             {% for user in read_users %}
             <a style="border-style:solid;border-width:1px;text-decoration:none;padding:3px 5px;border-radius:7px;background:#ddddfd;border-color:#ddddfd;margin:2px 2px;"
+              onclick="return confirm('Remove read and write rights for this user?')"
               href="{{ url_for('note_remove_rights', user_id=user.id, note_id=note_id, write_only='') }}">{{ user.username }}</a>
             {% endfor %}
           </div>
@@ -48,6 +49,7 @@
             <p style="margin:0px;">Users with write rights (click to remove rights):</p>
             {% for user in write_users %}
             <a style="border-style:solid;border-width:1px;text-decoration:none;padding:3px 5px;border-radius:7px;background:#ddddfd;border-color:#ddddfd;margin:0px;"
+              onclick="return confirm('Remove write rights for this user?')"
               href="{{ url_for('note_remove_rights', user_id=user.id, note_id=note_id, write_only='true') }}">{{ user.username }}</a>
             {% endfor %}
           </div>
