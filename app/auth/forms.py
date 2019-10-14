@@ -23,7 +23,7 @@ class PasswordChangeForm(FlaskForm):
         csrf = False
 
 class InviteForm(FlaskForm):
-    user_identifier = StringField("5-letter user identifier", [validators.Length(min=5, max=5)])
+    user_identifier = StringField("Identifier", [validators.Length(min=5, max=5)])
 
     class Meta:
         csrf = False

@@ -12,7 +12,7 @@ from app.notes.forms import NoteForm, NoteSearchForm
 def notes_index():
     notes = current_user.readableNotes
     noNotesMsg = "No notes to display." if not notes else ""
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), noNotesMsg=noNotesMsg, uid=current_user.id)
+    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), noNotesMsg=noNotesMsg, uid=current_user.id, writableNotes=current_user.writableNotes)
 
 
 @app.route("/notes/search", methods=["POST"])
@@ -35,7 +35,7 @@ def notes_search():
 
     noNotesMsg = "Search did not match any notes." if not filteredNotes else ""
 
-    return render_template("notes/notelist.html", notes=filteredNotes, form=NoteSearchForm(), activeFilterTags=searchedTags, noNotesMsg=noNotesMsg, uid=current_user.id)
+    return render_template("notes/notelist.html", notes=filteredNotes, form=NoteSearchForm(), activeFilterTags=searchedTags, noNotesMsg=noNotesMsg, uid=current_user.id, writableNotes=current_user.writableNotes)
 
 
 @app.route("/notes/new")
@@ -49,8 +49,6 @@ def notes_form():
 def notes_create():
     form = NoteForm(request.form)
     if not form.validate():
-        for error in form.sharewith.errors:
-            print(error)
         return render_newnote(form=form)
 
     note = Note(form.title.data, form.content.data,
@@ -76,8 +74,17 @@ def notes_create():
     current_user.readableNotes.append(note)
     current_user.writableNotes.append(note)
     # and to other(s) if shared
-    if form.sharewith.data != 0:
-        user = User.query.get(form.sharewith.data)
+    # write right
+    if form.writeShareWith.data != 0:
+        user = User.query.get(form.writeShareWith.data)
+        if user:
+            user.writableNotes.append(note)
+            if not note in user.readableNotes:
+                user.readableNotes.append(note)
+
+    # read right
+    if form.readShareWith.data != 0 and form.readShareWith.data != form.writeShareWith.data:
+        user = User.query.get(form.readShareWith.data)
         if user:
             user.readableNotes.append(note)
 
@@ -116,6 +123,8 @@ def note_remove_rights():
     write_only = request.args.get("write_only")
     user = User.query.filter_by(id=user_id).first()
     note = Note.query.filter_by(id=note_id).first()
+    if not user or not note or current_user.id != note.creator_id:
+        return redirect(url_for("notes_index"))
     if write_only:
         user.writableNotes.remove(note)
     else:
@@ -159,15 +168,24 @@ def notes_update(note_id):
     note.tags = associatedTags
 
     # handle further sharing of this note
-    if note.creator_id == current_user.id and form.sharewith.data != 0:
-        user = User.query.get(form.sharewith.data)
+    # write right
+    if note.creator_id == current_user.id and form.writeShareWith.data != 0:
+        user = User.query.get(form.writeShareWith.data)
+        if user and not note in user.writableNotes:
+            user.writableNotes.append(note)
+            if not note in user.readableNotes:
+                user.readableNotes.append(note)
+
+    # read right
+    if note.creator_id == current_user.id and form.readShareWith.data != 0 and form.readShareWith.data != form.writeShareWith.data:
+        user = User.query.get(form.readShareWith.data)
         if user and not note in user.readableNotes:
             user.readableNotes.append(note)
 
     db.session().commit()
 
     notes = current_user.readableNotes
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id)
+    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id, writableNotes=current_user.writableNotes)
 
 
 @app.route("/notes/delete/<note_id>/", methods=["POST"])
@@ -183,7 +201,7 @@ def notes_delete(note_id):
 
     notes = current_user.readableNotes
 
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id)
+    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id, writableNotes=current_user.writableNotes)
 
 
 # helpers
@@ -196,7 +214,8 @@ def render_newnote(form=None,
     contacts = [{"id": 0, "username": "None"}] + \
         current_user.get_contact_list()
     form = form if form else NoteForm()
-    form.sharewith.choices = [(c["id"], c["username"]) for c in contacts]
+    form.readShareWith.choices = [(c["id"], c["username"]) for c in contacts]
+    form.writeShareWith.choices = [(c["id"], c["username"]) for c in contacts]
     return render_template("notes/newnote.html",
                            form=form,
                            note_id=note_id,

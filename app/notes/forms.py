@@ -10,7 +10,8 @@ class NoteForm(FlaskForm):
     title = StringField("Title", [validators.Length(min=2)])
     content = TextAreaField("Content")
     tags = StringField("Tags")
-    sharewith = NoValidationSelectField("Share with", choices=[])
+    readShareWith = NoValidationSelectField("Add read rights", choices=[])
+    writeShareWith = NoValidationSelectField("Add write rights", choices=[])
 
     class Meta:
         csrf = False

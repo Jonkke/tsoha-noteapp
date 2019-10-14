@@ -9,7 +9,7 @@
 </head>
 
 <body>
-
+  {% set active_page = active_page|default('notesIndex') %}
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
 
 
@@ -21,13 +21,13 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
         {% if current_user.is_authenticated %}
-        <li class="nav-item active">
+        <li class="nav-item {{ 'active' if active_page == 'notesIndex' else '' }}">
           <a class="nav-link" href="{{ url_for('notes_index') }}">List notes <span class="sr-only">(current)</span></a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item {{ 'active' if active_page == 'newNote' else '' }}">
           <a class="nav-link" href="{{ url_for('notes_form') }}">New note</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item {{ 'active' if active_page == 'account' else '' }}">
           <a class="nav-link" href="{{ url_for('auth_settings') }}">Account & Contacts</a>
         </li>
         {% endif %}
