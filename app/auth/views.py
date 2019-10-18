@@ -41,7 +41,7 @@ def auth_login():
         return render_template("auth/loginform.html", form=LoginForm(), regSuccessMsg=regSuccessMsg)
 
     form = LoginForm(request.form)
-
+    
     user = User.query.filter_by(username=form.username.data).first()
     if not user or not bcrypt.check_password_hash(user.password_hash, form.password.data):
         return render_template("auth/loginform.html", form=form, error="No such username or password")
@@ -96,9 +96,6 @@ def auth_invite():
                 return render_accountsettings(inviteForm=inviteForm)
 
         query = "INSERT INTO user_contact (user_id, contact_id, inviter, confirmed) VALUES (:uid1, :uid2, :inv, '0')"
-        # current_user.contacts.append(invitedUser)
-        # invitedUser.contacts.append(current_user)
-        # db.session().commit()
         db.session().execute(
             query, {'uid1': current_user.id, 'uid2': invitedUser.id, 'inv': current_user.id})
         db.session().execute(

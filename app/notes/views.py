@@ -29,9 +29,6 @@ def notes_search():
             if [stag for stag in searchedTags if stag in tag.name]:
                 filteredNotes.append(note)
                 break
-            # if searchedTags.count(tag.name):
-            #     filteredNotes.append(note)
-            #     break
 
     noNotesMsg = "Search did not match any notes." if not filteredNotes else ""
 
@@ -168,7 +165,7 @@ def notes_update(note_id):
     note.tags = associatedTags
 
     # handle further sharing of this note
-    # write right
+    # write permission
     if note.creator_id == current_user.id and form.writeShareWith.data != 0:
         user = User.query.get(form.writeShareWith.data)
         if user and not note in user.writableNotes:
@@ -176,7 +173,7 @@ def notes_update(note_id):
             if not note in user.readableNotes:
                 user.readableNotes.append(note)
 
-    # read right
+    # read permission
     if note.creator_id == current_user.id and form.readShareWith.data != 0 and form.readShareWith.data != form.writeShareWith.data:
         user = User.query.get(form.readShareWith.data)
         if user and not note in user.readableNotes:
