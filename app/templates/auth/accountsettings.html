@@ -7,9 +7,14 @@
     <div class="col-sm mb-3">
       <div class="info" style="border:1px solid #ddd; padding:5px; height:100%;">
         <h4 class="mb-4">Account information</h4>
-        <p>Username: {{ userinfo.username }}</p>
-        <p>Identifier: {{ userinfo.five_letter_identifier }}</p>
-        <p>Number of contacts: {{ userinfo.numcontacts }}</p>
+        <p>Username: {{ current_user.username }}</p>
+        <p>Personal identifier string: {{ current_user.five_letter_identifier }}</p>
+        <p>Number of contacts: {{ current_user.get_contact_list()|length }}</p>
+        <p>Created notes: {{ current_user.get_notes_count(count_filter='owned_only') }}</p>
+        <p>Notes shared with you with read permissions: {{ current_user.get_notes_count(count_filter='not_owned_readable') }}</p>
+        <p>Notes shared with you with read and write permissions: {{ current_user.get_notes_count(count_filter='not_owned_writable') }}</p>
+        <p>Total number of accessible notes: {{ current_user.get_notes_count(count_filter='all') }}</p>
+        <p></p>
       </div>
     </div>
     <div class="col-sm mb-3">

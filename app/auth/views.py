@@ -134,7 +134,7 @@ def render_accountsettings(passwordChangeForm=None,
                            inviteForm=None,
                            invitedDoneMsg="",
                            passwordMsg=""):
-    return render_template("auth/accountsettings.html", userinfo=current_user.get_user_info(),
+    return render_template("auth/accountsettings.html",
                            contactlist=current_user.get_contact_list(),
                            pendingContactList=current_user.get_pending_contacts(),
                            pwchangeform=passwordChangeForm if passwordChangeForm else PasswordChangeForm(

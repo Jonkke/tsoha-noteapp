@@ -7,30 +7,30 @@ from sqlalchemy.ext.declarative import declarative_base
 table_base = declarative_base()
 
 user_note_read = db.Table("user_note_read",
-                        db.Column("user_id", db.Integer, db.ForeignKey(
-                            "account.id"), primary_key=True),
-                        db.Column("note_id", db.Integer, db.ForeignKey(
-                            "note.id"), primary_key=True)
-                        )
+                          db.Column("user_id", db.Integer, db.ForeignKey(
+                              "account.id"), primary_key=True),
+                          db.Column("note_id", db.Integer, db.ForeignKey(
+                              "note.id"), primary_key=True)
+                          )
 
 user_note_write = db.Table("user_note_write",
-                         db.Column("user_id", db.Integer, db.ForeignKey(
-                             "account.id"), primary_key=True),
-                         db.Column("note_id", db.Integer, db.ForeignKey(
-                             "note.id"), primary_key=True)
-                         )
+                           db.Column("user_id", db.Integer, db.ForeignKey(
+                               "account.id"), primary_key=True),
+                           db.Column("note_id", db.Integer, db.ForeignKey(
+                               "note.id"), primary_key=True)
+                           )
 
 user_contact = db.Table("user_contact", db.Model.metadata,
-                       db.Column("user_id", db.Integer, db.ForeignKey(
-                           "account.id"), primary_key=True),
-                       db.Column("contact_id", db.Integer, db.ForeignKey(
-                           "account.id"), primary_key=True),
-                       db.Column("inviter", db.Integer, db.ForeignKey(
-                           "account.id"), nullable=False),
-                       db.Column("confirmed", db.Boolean, default=False),
-                       db.Column("date_contacted", db.DateTime,
-                                 default=db.func.current_timestamp())
-                       )
+                        db.Column("user_id", db.Integer, db.ForeignKey(
+                            "account.id"), primary_key=True),
+                        db.Column("contact_id", db.Integer, db.ForeignKey(
+                            "account.id"), primary_key=True),
+                        db.Column("inviter", db.Integer, db.ForeignKey(
+                            "account.id"), nullable=False),
+                        db.Column("confirmed", db.Boolean, default=False),
+                        db.Column("date_contacted", db.DateTime,
+                                  default=db.func.current_timestamp())
+                        )
 
 
 class User(Base):
@@ -78,12 +78,29 @@ class User(Base):
     def is_authenticated(self):
         return True
 
-    def get_user_info(self):
-        return {
-            "username": self.username,
-            "five_letter_identifier": self.five_letter_identifier,
-            "numcontacts": len(self.get_contact_list())
-        }
+    def get_notes_count(self, count_filter="all"):
+        count = 0
+        if count_filter == "owned_only":
+            query = "SELECT COUNT (*) FROM note n WHERE n.creator_id = :uid"
+            count = db.session().execute(query, {'uid': self.id}).scalar()
+        elif count_filter == "not_owned_readable":
+            query = "SELECT COUNT (*) FROM \
+                    (note n INNER JOIN user_note_read unr ON n.id = unr.note_id AND n.creator_id != unr.user_id) \
+                     WHERE user_id = :uid"
+            count = db.session().execute(query, {'uid': self.id}).scalar()
+        elif count_filter == "not_owned_writable":
+            query = "SELECT COUNT (*) FROM \
+                     (note n INNER JOIN user_note_write unw ON n.id = unw.note_id AND n.creator_id != unw.user_id) \
+                     WHERE user_id = :uid"
+            count = db.session().execute(query, {'uid': self.id}).scalar()
+        elif count_filter == "all":
+            query = "SELECT COUNT (*) FROM \
+                    (note n INNER JOIN user_note_read unr ON n.id = unr.note_id) \
+                    WHERE user_id = :uid"
+            count = db.session().execute(query, {'uid': self.id}).scalar()
+        else:
+            count = 0
+        return count
 
     def get_contact_list(self, include_non_confirmed=False):
         query = ""
