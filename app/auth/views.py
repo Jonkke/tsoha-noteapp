@@ -86,14 +86,14 @@ def auth_invite():
         return render_accountsettings(inviteForm=inviteForm)
 
     invitedUser = User.query.filter_by(
-        five_letter_identifier=inviteForm.user_identifier.data).first()
+        five_letter_identifier=inviteForm.user_identifier.data.upper()).first()
     if invitedUser:
         if invitedUser.id == current_user.id:
             return render_accountsettings(inviteForm=inviteForm, invitedDoneMsg="Can't send invitation to yourself!")
 
         for contact in current_user.get_contact_list(include_non_confirmed=True):
             if (contact["id"] == invitedUser.id):
-                return render_accountsettings(inviteForm=inviteForm, invitedDoneMsg="You already have a contact who has this invitation identifier!")
+                return render_accountsettings(inviteForm=inviteForm, invitedDoneMsg="You already have a contact who has this invitation identifier! (This could be a pending contact that has not been accepted yet!)")
 
         query = "INSERT INTO user_contact (user_id, contact_id, inviter, confirmed) VALUES (:uid1, :uid2, :inv, '0')"
         db.session().execute(

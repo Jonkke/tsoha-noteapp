@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, validators
+from wtforms.validators import EqualTo
 
 class LoginForm(FlaskForm):
     username = StringField("Username")
@@ -10,7 +11,8 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField("Username", [validators.Length(min=2, max=32)])
-    password = PasswordField("Password", [validators.Length(min=4, max=128)])
+    password = PasswordField("Password", validators=[validators.Length(min=4, max=128), validators.EqualTo('confirm', message='Passwords must match.')])
+    confirm = PasswordField("Repeat password")
 
     class Meta:
         csrf = False
