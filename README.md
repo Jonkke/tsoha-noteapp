@@ -11,5 +11,7 @@ Password: passu
 ## Dokumentaatio
 
 [Aihekuvaus, käyttötapaukset ja tietokantakaavio](docs/userstories.md)  
+
 [Asennus- ja käyttöohjeet](docs/instructions.md)  
+
 [CREATE TABLE -lauseet tietokantatauluille](docs/createtables.md)

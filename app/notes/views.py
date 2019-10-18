@@ -70,8 +70,8 @@ def notes_create():
     # add read and write right to creator of this note
     current_user.readableNotes.append(note)
     current_user.writableNotes.append(note)
-    # and to other(s) if shared
-    # write right
+
+    # write permissions
     if form.writeShareWith.data != 0:
         user = User.query.get(form.writeShareWith.data)
         if user:
@@ -79,7 +79,7 @@ def notes_create():
             if not note in user.readableNotes:
                 user.readableNotes.append(note)
 
-    # read right
+    # read permissions
     if form.readShareWith.data != 0 and form.readShareWith.data != form.writeShareWith.data:
         user = User.query.get(form.readShareWith.data)
         if user:

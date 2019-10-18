@@ -11,8 +11,10 @@
         <p>Personal identifier string: {{ current_user.five_letter_identifier }}</p>
         <p>Number of contacts: {{ current_user.get_contact_list()|length }}</p>
         <p>Created notes: {{ current_user.get_notes_count(count_filter='owned_only') }}</p>
-        <p>Notes shared with you with read permissions: {{ current_user.get_notes_count(count_filter='not_owned_readable') }}</p>
-        <p>Notes shared with you with read and write permissions: {{ current_user.get_notes_count(count_filter='not_owned_writable') }}</p>
+        <p>Notes shared with you with read permissions:
+          {{ current_user.get_notes_count(count_filter='not_owned_readable') }}</p>
+        <p>Notes shared with you with read and write permissions:
+          {{ current_user.get_notes_count(count_filter='not_owned_writable') }}</p>
         <p>Total number of accessible notes: {{ current_user.get_notes_count(count_filter='all') }}</p>
         <p></p>
       </div>

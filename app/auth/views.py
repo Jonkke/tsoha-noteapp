@@ -37,11 +37,11 @@ def auth_login():
     if request.method == "GET":
         regSuccessMsg = ""
         if request.args.get("regSuccess"):
-            regSuccessMsg = "Successfully registered new user! You can now log in."
+            regSuccessMsg = "Successfully registered a new user! You can now log in."
         return render_template("auth/loginform.html", form=LoginForm(), regSuccessMsg=regSuccessMsg)
 
     form = LoginForm(request.form)
-    
+
     user = User.query.filter_by(username=form.username.data).first()
     if not user or not bcrypt.check_password_hash(user.password_hash, form.password.data):
         return render_template("auth/loginform.html", form=form, error="No such username or password")
@@ -68,7 +68,7 @@ def auth_settings():
 def auth_pwupdate():
     form = PasswordChangeForm(request.form)
     if not bcrypt.check_password_hash(current_user.password_hash, form.oldpassword.data):
-        return render_accountsettings(passwordMsg="Wrong password.")
+        return render_accountsettings(passwordMsg="Old password is wrong! Please try again.")
 
     pw_hash = bcrypt.generate_password_hash(
         form.newpassword.data).decode("utf-8")
@@ -89,11 +89,11 @@ def auth_invite():
         five_letter_identifier=inviteForm.user_identifier.data).first()
     if invitedUser:
         if invitedUser.id == current_user.id:
-            return render_accountsettings(inviteForm=inviteForm)
+            return render_accountsettings(inviteForm=inviteForm, invitedDoneMsg="Can't send invitation to yourself!")
 
         for contact in current_user.get_contact_list(include_non_confirmed=True):
             if (contact["id"] == invitedUser.id):
-                return render_accountsettings(inviteForm=inviteForm)
+                return render_accountsettings(inviteForm=inviteForm, invitedDoneMsg="You already have a contact who has this invitation identifier!")
 
         query = "INSERT INTO user_contact (user_id, contact_id, inviter, confirmed) VALUES (:uid1, :uid2, :inv, '0')"
         db.session().execute(
@@ -102,7 +102,7 @@ def auth_invite():
             query, {'uid1': invitedUser.id, 'uid2': current_user.id, 'inv': current_user.id})
         db.session().commit()
 
-    return render_accountsettings(invitedDoneMsg="Invitation sent, awaiting confirmation from the other user.")
+    return render_accountsettings(invitedDoneMsg="Invitation sent. You must wait for the other user to accept your invitation.")
 
 
 @app.route("/auth/acceptcontact/<contact_id>", methods=["POST"])
