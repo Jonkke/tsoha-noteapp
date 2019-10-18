@@ -52,7 +52,7 @@ def notes_create():
         return render_newnote(form=form)
 
     note = Note(form.title.data, form.content.data,
-                current_user.id, 0)
+                current_user.id)
 
     # parse tags & associate with this note
     formTagNames = list(dict.fromkeys(form.tags.data.split()))

@@ -12,3 +12,4 @@ Password: passu
 
 [Aihekuvaus, käyttäjätarinat ja tietokantakaavio](docs/userstories.md)
 [Asennus- ja käyttöohjeet](docs/instructions.md)
+[CREATE TABLE -lauseet tietokantatauluille](docs/createtables.md)
