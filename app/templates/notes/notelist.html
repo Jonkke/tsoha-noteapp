@@ -14,7 +14,7 @@
   <div>
     <small>Active filter tags:</small>
     {% for tag in activeFilterTags %}
-      <small>{{ tag }}</small>
+    <small>{{ tag }}</small>
     {% endfor %}
   </div>
   {% endif %}
@@ -36,12 +36,14 @@
         </small>
       </div>
       <div>
-        <small class="text-muted float-right">created by: {{ note.creator.username }} | last edit by:
-          {{ note.last_editor.username }}
-        </small>
+        <div class="float-right">
+          <p class="text-muted">created by: {{ note.creator.username }} | on {{ moment(note.date_created).format('MMMM Do YYYY, HH:mm') }}</p>
+          <p class="text-muted">last edit by: {{ note.last_editor.username }} | on {{ moment(note.date_modified).format('MMMM Do YYYY, HH:mm') }}</p>
+        </div>
         <div class="btn-group">
           <form class="form-inline pull-left" method="GET" action="{{ url_for('notes_edit', note_id=note.id) }}">
-            <button class="btn btn-primary mr-3" type="submit" {{ 'disabled' if not note in writableNotes }}>Edit</button>
+            <button class="btn btn-primary mr-3" type="submit"
+              {{ 'disabled' if not note in writableNotes }}>Edit</button>
           </form>
           <form class="form-inline" method="POST" action="{{ url_for('notes_delete', note_id=note.id) }}"
             onsubmit="return confirm('Delete note?');">
