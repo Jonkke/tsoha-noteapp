@@ -93,7 +93,9 @@ def auth_invite():
 
         for contact in current_user.get_contact_list(include_non_confirmed=True):
             if (contact["id"] == invitedUser.id):
-                return render_accountsettings(inviteForm=inviteForm, invitedDoneMsg="You already have a contact who has this invitation identifier! (This could be a pending contact that has not been accepted yet!)")
+                return render_accountsettings(inviteForm=inviteForm,
+                                              invitedDoneMsg="You already have a contact who has this invitation identifier! \
+                                                             (This could be a pending contact that has not been accepted yet!)")
 
         query = "INSERT INTO user_contact (user_id, contact_id, inviter, confirmed) VALUES (:uid1, :uid2, :inv, '0')"
         db.session().execute(

@@ -1,6 +1,8 @@
 ## Muistiinpano- ja ajanseuraamisohjelma
 
-Ohjelma jolla voi tehdä ja tarkastella muistiinpanoja ja jakaa niitä muille käyttäjille joko vain lukuoikeuksin, tai myös kirjoitusoikeuksin. Ohjelman käyttötapaukset ovat seuraavat (SQL-lauseissa voi olla epätarkkuuksia eivätkä ne välttämättä toimi täysin samoin kuin SQLAlchemyn generoimat SQL-lausekkeet, joita ohjelmassa enimmäkseen käytetään):
+Ohjelma jolla voi tehdä ja tarkastella muistiinpanoja ja jakaa niitä muille käyttäjille joko vain lukuoikeuksin, tai myös kirjoitusoikeuksin. Ohjelman käyttötapaukset ovat seuraavat (SQL-lauseissa voi olla epätarkkuuksia eivätkä ne välttämättä toimi täysin samoin kuin SQLAlchemyn generoimat SQL-lausekkeet,joita ohjelmassa enimmäkseen käytetään. Näiden tarkoitus on lähinnä demonstroida ohjelman toimintaa yleisellä tasolla):
+
+### Käyttötapaukset
 
 #### Käyttäjät
 
@@ -144,7 +146,21 @@ INSERT INTO user_note_write (user_id, note_id) VALUES (?, ?);
 </p></details>
 </blockquote>
 
+### Tietokantakaavio
+
 Alla on tietokantakaavio, josta ilmenee taulut ja niiden relaatiot muistiinpanoihin liittyvälle toiminnallisuudelle. Tämä kaavio voi laajentua myöhemmin, jos/kun ohjelmaan tulee lisää toiminnallisuutta:
 
 ![Tietokantakaavio](relations.png)
 
+### Puutteet ohjelmassa
+
+Ohjelma on ajanpuutteen ja muiden tekosyiden takia jäänyt aika raakileeksi siitä, mitä sen alun perin piti olla. Ulkoasu on paikoin aika järkyttävä, mutta myös toiminnallisuuksissa on joitakin puutteita:
+
+- Luotua käyttäjää ei pysty poistamaan
+- Käyttäjä ei voi valita itselleen erillistä näyttönimeä
+- Muistiinpanolistassa ei ole sivutusta
+- Muistiinpanolistaa ei voi suodattaa muuten kuin tagihaulla. Myöskään esim. päivämäärän tai jaetun käyttäjän perusteella järjestäminen ei onnistu
+- Muistiinpanojen sisältöä ei voi muotoilla mitenkään
+- Kontaktikäyttäjien profiileja tms. tietoja ei voi tarkastella, muutenkin tämä "kaveriominaisuus" on aika hiomaton ja pelkistetty
+- Kontaktia ei myöskään pysty poistamaan kun se on hyväksytty
+- Myös koodi sisältää paikoin purkkaratkaisuja ja refaktoroitavaa riittäisi

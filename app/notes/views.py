@@ -12,7 +12,12 @@ from app.notes.forms import NoteForm, NoteSearchForm
 def notes_index():
     notes = current_user.readableNotes
     noNotesMsg = "No notes to display." if not notes else ""
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), noNotesMsg=noNotesMsg, uid=current_user.id, writableNotes=current_user.writableNotes)
+    return render_template("notes/notelist.html",
+                           notes=notes,
+                           form=NoteSearchForm(),
+                           noNotesMsg=noNotesMsg,
+                           uid=current_user.id,
+                           writableNotes=current_user.writableNotes)
 
 
 @app.route("/notes/search", methods=["POST"])
@@ -32,7 +37,13 @@ def notes_search():
 
     noNotesMsg = "Search did not match any notes." if not filteredNotes else ""
 
-    return render_template("notes/notelist.html", notes=filteredNotes, form=NoteSearchForm(), activeFilterTags=searchedTags, noNotesMsg=noNotesMsg, uid=current_user.id, writableNotes=current_user.writableNotes)
+    return render_template("notes/notelist.html",
+                           notes=filteredNotes,
+                           form=NoteSearchForm(),
+                           activeFilterTags=searchedTags,
+                           noNotesMsg=noNotesMsg,
+                           uid=current_user.id,
+                           writableNotes=current_user.writableNotes)
 
 
 @app.route("/notes/new")
@@ -109,7 +120,11 @@ def notes_edit(note_id):
                         current_user.id, note.readUsers)
     write_users = filter(lambda user: user.id !=
                          current_user.id, note.writeUsers)
-    return render_newnote(form=form, note_id=note_id, allowsharing=allowsharing, read_users=read_users, write_users=write_users)
+    return render_newnote(form=form,
+                          note_id=note_id,
+                          allowsharing=allowsharing,
+                          read_users=read_users,
+                          write_users=write_users)
 
 
 @app.route("/notes/edit/removerights/", methods=["GET"])
@@ -182,7 +197,11 @@ def notes_update(note_id):
     db.session().commit()
 
     notes = current_user.readableNotes
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id, writableNotes=current_user.writableNotes)
+    return render_template("notes/notelist.html",
+                           notes=notes,
+                           form=NoteSearchForm(),
+                           uid=current_user.id,
+                           writableNotes=current_user.writableNotes)
 
 
 @app.route("/notes/delete/<note_id>/", methods=["POST"])
@@ -198,7 +217,11 @@ def notes_delete(note_id):
 
     notes = current_user.readableNotes
 
-    return render_template("notes/notelist.html", notes=notes, form=NoteSearchForm(), uid=current_user.id, writableNotes=current_user.writableNotes)
+    return render_template("notes/notelist.html",
+                           notes=notes,
+                           form=NoteSearchForm(),
+                           uid=current_user.id,
+                           writableNotes=current_user.writableNotes)
 
 
 # helpers

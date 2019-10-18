@@ -45,8 +45,6 @@ class User(Base):
                                     backref=db.backref("writeUsers", lazy="dynamic"))
     contacts = db.relationship("User",
                                secondary=user_contact,
-                               #    primaryjoin=id == user_contact.c.user_id,
-                               #    secondaryjoin=id == user_contact.c.contact_id,
                                primaryjoin="User.id == user_contact.c.user_id",
                                secondaryjoin="User.id == user_contact.c.contact_id",
                                backref=db.backref("contactees", lazy="dynamic")
@@ -105,9 +103,13 @@ class User(Base):
     def get_contact_list(self, include_non_confirmed=False):
         query = ""
         if not include_non_confirmed:
-            query = "SELECT * FROM (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = '1') ac WHERE ac.id != :uid AND ac.contact_id = :uid"
+            query = "SELECT * FROM \
+                    (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = '1') ac \
+                     WHERE ac.id != :uid AND ac.contact_id = :uid"
         else:
-            query = "SELECT * FROM (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id) ac WHERE ac.id != :uid AND ac.contact_id = :uid"
+            query = "SELECT * FROM \
+                    (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id) ac \
+                     WHERE ac.id != :uid AND ac.contact_id = :uid"
         rs = db.session().execute(query, {'uid': self.id})
         contacts = []
         for r in rs:
@@ -117,7 +119,9 @@ class User(Base):
                                  "username": contact["username"]}, contacts))
 
     def get_pending_contacts(self):
-        query = "SELECT * FROM (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = '0') ac WHERE ac.id != :uid AND ac.contact_id = :uid AND ac.inviter != :uid"
+        query = "SELECT * FROM \
+                (account a INNER JOIN user_contact uc ON uc.user_id = a.id AND uc.contact_id != a.id AND uc.confirmed = '0') ac \
+                WHERE ac.id != :uid AND ac.contact_id = :uid AND ac.inviter != :uid"
         rs = db.session().execute(query, {'uid': self.id})
         pendingContacts = []
         for r in rs:

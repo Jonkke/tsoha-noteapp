@@ -10,7 +10,7 @@ Password: passu
 
 ## Dokumentaatio
 
-[Aihekuvaus, käyttötapaukset ja tietokantakaavio](docs/userstories.md)  
+[Aihekuvaus, käyttötapaukset, tietokantakaavio ja puutteet](docs/userstories.md)  
 
 [Asennus- ja käyttöohjeet](docs/instructions.md)  
 
