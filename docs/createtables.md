@@ -1,6 +1,8 @@
 ### CREATE TABLES -lauseet
 Tässä on listattuna ohjelman käyttämät CREATE TABLE -lauseet tietokantataulujen luomiseen. Käytännössä näitä ei käytetä tällaisenaan suoraan koodissa, vaan ohjelma käyttää flask-SQLAlchemy -kirjastoa tietokantataulujen ja ohjelmassa esiintyvien luokkien yhdistämiseen, ja nämä lauseet on generoitu näiden yhteyksien pohjalta:
 
+##### Päätaulut
+
 ```
 CREATE TABLE tag (
 	id INTEGER NOT NULL, 
@@ -30,6 +32,11 @@ CREATE TABLE note (
 	FOREIGN KEY(creator_id) REFERENCES account (id), 
 	FOREIGN KEY(last_editor_id) REFERENCES account (id)
 );
+```
+
+##### Yhdistetaulut
+
+```
 CREATE TABLE user_contact (
 	user_id INTEGER NOT NULL, 
 	contact_id INTEGER NOT NULL, 
