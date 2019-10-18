@@ -39,9 +39,9 @@ class User(Base):
     username = db.Column(db.String(144), nullable=False)
     password_hash = db.Column(db.String(144), nullable=False)
     five_letter_identifier = db.Column(db.String(5), nullable=False)
-    readableNotes = db.relationship("Note", secondary=user_note_read, lazy="subquery",
+    readableNotes = db.relationship("Note", secondary=user_note_read, lazy="dynamic",
                                     backref=db.backref("readUsers", lazy="dynamic"))
-    writableNotes = db.relationship("Note", secondary=user_note_write, lazy="subquery",
+    writableNotes = db.relationship("Note", secondary=user_note_write, lazy="dynamic",
                                     backref=db.backref("writeUsers", lazy="dynamic"))
     contacts = db.relationship("User",
                                secondary=user_contact,

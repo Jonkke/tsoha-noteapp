@@ -1,6 +1,7 @@
 from app import app, db
 from flask import redirect, url_for, render_template, request
 from flask_login import login_required, current_user
+from sqlalchemy import desc
 
 from app.auth.models import User
 from app.notes.models import Note, Tag
@@ -10,7 +11,7 @@ from app.notes.forms import NoteForm, NoteSearchForm
 @app.route("/notes", methods=["GET"])
 @login_required
 def notes_index():
-    notes = current_user.readableNotes
+    notes = current_user.readableNotes.order_by(desc(Note.date_modified))
     noNotesMsg = "No notes to display." if not notes else ""
     return render_template("notes/notelist.html",
                            notes=notes,
@@ -27,7 +28,7 @@ def notes_search():
     searchedTags = list(form.search_str.data.split())
     if not searchedTags:
         return redirect(url_for("notes_index"))
-    notes = current_user.readableNotes
+    notes = current_user.readableNotes.order_by(desc(Note.date_modified))
     filteredNotes = []
     for note in notes:
         for tag in note.tags:
@@ -196,7 +197,7 @@ def notes_update(note_id):
 
     db.session().commit()
 
-    notes = current_user.readableNotes
+    notes = current_user.readableNotes.order_by(desc(Note.date_modified))
     return render_template("notes/notelist.html",
                            notes=notes,
                            form=NoteSearchForm(),
@@ -215,7 +216,7 @@ def notes_delete(note_id):
     db.session().delete(note)
     db.session().commit()
 
-    notes = current_user.readableNotes
+    notes = current_user.readableNotes.order_by(desc(Note.date_modified))
 
     return render_template("notes/notelist.html",
                            notes=notes,
